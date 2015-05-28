@@ -34,10 +34,14 @@ Just call the method ```presentPermissionViewIfNeededInViewController(viewContro
 
 
 ##Related##
-Please also take a look at my other projects, like [TTITransition](https://github.com/Tantalum73/TTITransition).
+Please also take a look at my other projects, like [TTITransition](https://github.com/Tantalum73/TTITransition) or [GradientView](https://github.com/Tantalum73/GradientView).
+
+**I wrote down my thoughts** concerning asking the user about permissions in detail on my [blog](https://anerma.de).
+
+
 Also check out my app [TourTime](https://anerma.de/TourTime/), the app that measures the time you need to get from one location to another without draining your battery.
 
 - [Website](https://anerma.de/TourTime/)
 - [AppStore](https://itunes.apple.com/app/id848979893)
 
-In addition to that, I am writing my (little) blog [here](https://anerma.de).
+
