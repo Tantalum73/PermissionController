@@ -31,7 +31,9 @@ I have written down my thoughts on this topic in my [blog](https://anerma.de/blo
 ##Usage
 Just call the method ```presentPermissionViewIfNeededInViewController(viewController: UIViewController, interestedInPermission: PermissionInterestedIn?, successBlock: (()->())?, failureBlock: (()->())? )``` passing your actual ```UIViewController```, the type of permission that you are interested in *(used to check if the desired permission was granted)* and what to do when the mentioned permission is granted (```successBlock```) or not (```failureBlock```).
 
-
+**Also worth a note:**
+If the user has declined, lets say the location permission, on a system level (by declining the system dialog question), PermissionController will open the device settings if the user hits the location button again.
+This will enable the user to reconsider his decision.
 
 ##Related##
 Please also take a look at my other projects, like [TTITransition](https://github.com/Tantalum73/TTITransition) or [GradientView](https://github.com/Tantalum73/GradientView).
