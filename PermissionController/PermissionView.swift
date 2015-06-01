@@ -66,11 +66,6 @@ class PermissionView: UIView {
         tintButtonsBasedOnLatestPermissionStatus()
     }
     
-    override func tintColorDidChange() {
-        super.tintColorDidChange()
-        tintButtonsBasedOnLatestPermissionStatus()
-    }
-    
     override func alignmentRectForFrame(frame: CGRect) -> CGRect {
         return self.bounds
     }

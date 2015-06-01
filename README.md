@@ -38,7 +38,8 @@ This will enable the user to reconsider his decision.
 ##Related##
 Please also take a look at my other projects, like [TTITransition](https://github.com/Tantalum73/TTITransition) or [GradientView](https://github.com/Tantalum73/GradientView).
 
-**I wrote down my thoughts** concerning asking the user about permissions in detail on my [blog](https://anerma.de).
+**I wrote down my thoughts** concerning asking the user about permissions in detail on my [blog](https://anerma.de/blog/asking-about-permissions).
+In addition to that, [here](https://anerma.de/blog/open-source-project-permissioncontroller) are some more words about this project.
 
 
 Also check out my app [TourTime](https://anerma.de/TourTime/), the app that measures the time you need to get from one location to another without draining your battery.
