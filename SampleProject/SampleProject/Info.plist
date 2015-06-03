@@ -37,8 +37,8 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>The spirit of stack overflow is coders helping coders</string>
+	<string>You could use even more awsome features!</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>I have learned more on stack overflow than anything else</string>
+	<string>You could use even more awsome features!</string>
 </dict>
 </plist>
