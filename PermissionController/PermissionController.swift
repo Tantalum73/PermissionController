@@ -114,8 +114,8 @@ If other permissions are missing, the PermissionView will be displayed.
             return true
         }
                 
-        
-        return false
+        successBlock?()
+        return true
     }
     
     
