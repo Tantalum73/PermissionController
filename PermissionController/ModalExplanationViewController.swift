@@ -13,6 +13,15 @@ private let kExplanationViewWidth = 300
 
 private let kExplanationViewOffset : CGFloat = 500
 
+
+private let kExplainationViewHeightPercentagePortrait = 0.7
+private let kExplainationViewHeightPercentageLandscape = 0.9
+
+private let kExplainationViewWidthPercentagePortrait = 0.9
+private let kExplainationViewWidthPercentageLandscape = 0.9
+
+
+
 struct StatusOfPermissions {
     //TODO: evtl. enum to express more values
     //TODO: save global state fo this struct to disk to prevent from checking every time again
@@ -42,6 +51,13 @@ class ModalExplanationViewController: UIViewController {
     private var snapBehavior : UISnapBehavior!
     private var panBehavior : UIAttachmentBehavior!
     private var currentExplanationView : UIView!
+    
+    
+    private var widthOfView : NSLayoutConstraint!
+    private var heightOfView : NSLayoutConstraint!
+    private var centerXOfView : NSLayoutConstraint!
+    private var centerYOfView : NSLayoutConstraint!
+    
     
     private var index = 0
     
@@ -136,12 +152,14 @@ class ModalExplanationViewController: UIViewController {
         var newView = self.createExplanationViewForIndex(nextIndex)!
         
         self.view.addSubview(newView)
-        var center = CGPoint(x: CGRectGetWidth(view.bounds)/2, y: CGRectGetHeight(view.bounds)/2)
-        snapBehavior = UISnapBehavior(item: newView, snapToPoint: center)
-        center.y += kExplanationViewOffset
         
-        attachmentBehavior = UIAttachmentBehavior(item: newView, offsetFromCenter: UIOffset(horizontal: 0, vertical: kExplanationViewOffset), attachedToAnchor: center)
+        var center = CGPoint(x: CGRectGetWidth(view.bounds)/2, y: CGRectGetHeight(view.bounds)/2)
+        snapBehavior = self.snapBehaviorForCenter(center, item: newView)
+        
+        attachmentBehavior = attachmentBehaviorForCenter(center, item: newView)
         resetExplanationView(self.currentExplanationView, position: position)
+        
+        addConstraintsToNewView(newView)
     }
 
     private func createExplanationViewForIndex(index: Int) -> UIView? {
@@ -181,6 +199,78 @@ class ModalExplanationViewController: UIViewController {
         }
     }
     
+    //MARK: - Rotation Handlers
+    
+    override func willTransitionToTraitCollection(newCollection: UITraitCollection, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        super.willTransitionToTraitCollection(newCollection, withTransitionCoordinator: coordinator)
+        
+        coordinator.animateAlongsideTransition({ context in
+            let snappedView = self.currentExplanationView
+            self.animator.removeBehavior(self.snapBehavior)
+            self.animator.removeBehavior(self.attachmentBehavior)
+            
+            var center = CGPoint(x: CGRectGetWidth(self.view.bounds)/2, y: CGRectGetHeight(self.view.bounds)/2)
+            self.snapBehavior = self.snapBehaviorForCenter(center, item: snappedView)
+            self.attachmentBehavior = self.attachmentBehaviorForCenter(center, item: snappedView)
+            
+            self.resetExplanationView(snappedView, position: .Default)
+            
+            self.view.removeConstraint(self.widthOfView)
+            self.view.removeConstraint(self.heightOfView)
+            
+            self.widthOfView = self.constraintWidthForExplanationView(snappedView)
+            self.heightOfView = self.constraintHeightForExplanationView(snappedView)
+            
+            self.view.addConstraint(self.widthOfView)
+            self.view.addConstraint(self.heightOfView)
+            
+            self.view.layoutIfNeeded()
+            
+            }, completion: ({ context in
+                self.view.layoutIfNeeded()
+            }))
+    }
+    
+    private func snapBehaviorForCenter(center: CGPoint, item: UIView) -> UISnapBehavior {
+        return UISnapBehavior(item: item, snapToPoint: center)
+    }
+    private func attachmentBehaviorForCenter(center: CGPoint, item: UIView) -> UIAttachmentBehavior {
+        var newCenter = center
+        newCenter.y += kExplanationViewOffset
+        
+        return UIAttachmentBehavior(item: item, offsetFromCenter: UIOffset(horizontal: 0, vertical: kExplanationViewOffset), attachedToAnchor: newCenter)
+    }
+    private func constraintWidthForExplanationView(view: UIView) -> NSLayoutConstraint {
+        let multiplier : CGFloat = isWiderThanHeigh() ? CGFloat(kExplainationViewWidthPercentageLandscape) : CGFloat(kExplainationViewWidthPercentagePortrait)
+        
+        return NSLayoutConstraint(item: view, attribute: .Width, relatedBy: .Equal, toItem: self.view, attribute: .Width, multiplier: multiplier, constant: 0)
+    }
+    private func constraintHeightForExplanationView(view: UIView) -> NSLayoutConstraint {
+        let multiplier : CGFloat = isWiderThanHeigh() ? CGFloat(kExplainationViewHeightPercentageLandscape) : CGFloat(kExplainationViewHeightPercentagePortrait)
+        
+        return NSLayoutConstraint(item: view, attribute: .Height, relatedBy: .Equal, toItem: self.view, attribute: .Height, multiplier: multiplier, constant: 0)
+    }
+    
+    private func isWiderThanHeigh() -> Bool {
+        return CGRectGetWidth(self.view.bounds) > CGRectGetHeight(self.view.bounds)
+    }
+    
+    private func addConstraintsToNewView(view: UIView) {
+        view.setTranslatesAutoresizingMaskIntoConstraints(false)
+        centerXOfView = NSLayoutConstraint(item: view, attribute: .CenterX, relatedBy: .Equal, toItem: self.view, attribute: .CenterX, multiplier: 1, constant: 0)
+        
+        centerYOfView = NSLayoutConstraint(item: view, attribute: .CenterY, relatedBy: .Equal, toItem: self.view, attribute: .CenterY, multiplier: 1, constant: kExplanationViewOffset)
+        widthOfView = constraintWidthForExplanationView(view)
+        
+        heightOfView = constraintHeightForExplanationView(view)
+        
+        self.view.addConstraint(centerXOfView)
+        self.view.addConstraint(centerYOfView)
+        self.view.addConstraint(heightOfView)
+        self.view.addConstraint(widthOfView)
+        
+    }
+
     
     
     //MARK: - GestureRecognizer Action Methods
