@@ -160,6 +160,7 @@ class ModalExplanationViewController: UIViewController {
         resetExplanationView(self.currentExplanationView, position: position)
         
         addConstraintsToNewView(newView)
+        newView.transform = CGAffineTransformConcat(newView.transform, CGAffineTransformMakeTranslation(0, -kExplanationViewOffset))
     }
 
     private func createExplanationViewForIndex(index: Int) -> UIView? {
@@ -259,7 +260,7 @@ class ModalExplanationViewController: UIViewController {
         view.setTranslatesAutoresizingMaskIntoConstraints(false)
         centerXOfView = NSLayoutConstraint(item: view, attribute: .CenterX, relatedBy: .Equal, toItem: self.view, attribute: .CenterX, multiplier: 1, constant: 0)
         
-        centerYOfView = NSLayoutConstraint(item: view, attribute: .CenterY, relatedBy: .Equal, toItem: self.view, attribute: .CenterY, multiplier: 1, constant: kExplanationViewOffset)
+        centerYOfView = NSLayoutConstraint(item: view, attribute: .CenterY, relatedBy: .Equal, toItem: self.view, attribute: .CenterY, multiplier: 1, constant: 0)
         widthOfView = constraintWidthForExplanationView(view)
         
         heightOfView = constraintHeightForExplanationView(view)
