@@ -8,10 +8,6 @@
 
 import UIKit
 
-private let kExplanationViewHeight = 400
-private let kExplanationViewWidth = 300
-
-private let kExplanationViewOffset : CGFloat = 500
 
 
 private let kExplainationViewHeightPercentagePortrait = 0.7
@@ -46,6 +42,12 @@ class ModalExplanationViewController: UIViewController {
     private var nameOfNibs : [String]!
     private var completion : ((finishedWithSuccess : Bool)->())?
     
+    private lazy var offsetForExplanationView : CGFloat = {
+        let heightOfScreen = UIScreen.mainScreen().bounds.size.height
+        
+        return heightOfScreen
+    }()
+    
     private var animator : UIDynamicAnimator!
     private var attachmentBehavior : UIAttachmentBehavior!
     private var snapBehavior : UISnapBehavior!
@@ -67,14 +69,14 @@ class ModalExplanationViewController: UIViewController {
         case RotatedLeft
         case RotatedRight
         
-        func viewCenter(var center: CGPoint)->CGPoint {
+        func viewCenter(var center: CGPoint, var offsetFromCenter : CGFloat)->CGPoint {
             switch self {
             case .RotatedLeft:
-                center.y += kExplanationViewOffset
-                center.x -= kExplanationViewOffset
+                center.y += offsetFromCenter
+                center.x -= offsetFromCenter
             case .RotatedRight:
-                center.y += kExplanationViewOffset
-                center.x += kExplanationViewOffset
+                center.y += offsetFromCenter
+                center.x += offsetFromCenter
                 
             default:
                 ()
@@ -160,13 +162,13 @@ class ModalExplanationViewController: UIViewController {
         resetExplanationView(self.currentExplanationView, position: position)
         
         addConstraintsToNewView(newView)
-        newView.transform = CGAffineTransformConcat(newView.transform, CGAffineTransformMakeTranslation(0, -kExplanationViewOffset))
+        newView.transform = CGAffineTransformConcat(newView.transform, CGAffineTransformMakeTranslation(0, -offsetForExplanationView))
     }
 
     private func createExplanationViewForIndex(index: Int) -> UIView? {
         let generalView: UIView = UINib(nibName: String(self.nameOfNibs[index]), bundle: nil).instantiateWithOwner(nil, options: nil).first as! UIView
         
-        generalView.frame = CGRect(x: 0, y: 0, width: kExplanationViewWidth, height: kExplanationViewHeight)
+//        generalView.frame = CGRect(x: 0, y: 0, width: kExplanationViewWidth, height: kExplanationViewHeight)
         
         //Setting up global Properties on ExplanationViews:
         
@@ -237,9 +239,9 @@ class ModalExplanationViewController: UIViewController {
     }
     private func attachmentBehaviorForCenter(center: CGPoint, item: UIView) -> UIAttachmentBehavior {
         var newCenter = center
-        newCenter.y += kExplanationViewOffset
+        newCenter.y += offsetForExplanationView
         
-        return UIAttachmentBehavior(item: item, offsetFromCenter: UIOffset(horizontal: 0, vertical: kExplanationViewOffset), attachedToAnchor: newCenter)
+        return UIAttachmentBehavior(item: item, offsetFromCenter: UIOffset(horizontal: 0, vertical: offsetForExplanationView), attachedToAnchor: newCenter)
     }
     private func constraintWidthForExplanationView(view: UIView) -> NSLayoutConstraint {
         let multiplier : CGFloat = isWiderThanHeigh() ? CGFloat(kExplainationViewWidthPercentageLandscape) : CGFloat(kExplainationViewWidthPercentagePortrait)
@@ -317,7 +319,7 @@ class ModalExplanationViewController: UIViewController {
                 let duration = 0.5
                 let center = CGPoint(x: CGRectGetWidth(view.bounds)/2, y: CGRectGetHeight(view.bounds)/2)
                 
-                panBehavior.anchorPoint = position.viewCenter(center)
+                panBehavior.anchorPoint = position.viewCenter(center, offsetFromCenter: self.offsetForExplanationView)
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (Int64)(duration * Double(NSEC_PER_SEC))), dispatch_get_main_queue(), {
                     
                     if nextIndex >= self.nameOfNibs.count {
@@ -421,7 +423,7 @@ class ModalExplanationViewController: UIViewController {
         
         UIView.animateWithDuration(0.7, delay: 0, usingSpringWithDamping: 1.5, initialSpringVelocity: 0, options: UIViewAnimationOptions.BeginFromCurrentState, animations: { () -> Void in
             
-            self.currentExplanationView.center = position.viewCenter(CGPoint(x: (CGRectGetWidth(self.view.bounds) / 2) + offsetToAddOrSubstract, y: CGRectGetHeight(self.view.bounds)/2))
+            self.currentExplanationView.center = position.viewCenter(CGPoint(x: (CGRectGetWidth(self.view.bounds) / 2) + offsetToAddOrSubstract, y: CGRectGetHeight(self.view.bounds)/2), offsetFromCenter: self.offsetForExplanationView)
             
             self.currentExplanationView.transform = position.viewTransform()
             
@@ -434,7 +436,7 @@ class ModalExplanationViewController: UIViewController {
         animator.removeAllBehaviors()
         
         var center = CGPoint(x: CGRectGetWidth(view.bounds)/2, y: CGRectGetHeight(view.bounds)/2)
-        ExplanationView.center = position.viewCenter(center)
+        ExplanationView.center = position.viewCenter(center , offsetFromCenter: offsetForExplanationView)
         ExplanationView.transform = position.viewTransform()
         
         animator.updateItemUsingCurrentState(ExplanationView)
