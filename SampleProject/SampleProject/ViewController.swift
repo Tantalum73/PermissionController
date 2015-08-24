@@ -24,11 +24,11 @@ class ViewController: UIViewController {
     @IBAction func showPermissionButtonPressed(sender: AnyObject) {
         permissionController.presentPermissionViewIfNeededInViewController(self, interestedInPermission: .Location, successBlock: { () -> () in
             
-            println("Location Access Granted. You could locate your user now.")
+            print("Location Access Granted. You could locate your user now.")
             
         }) { () -> () in
             
-            println("Location Access Denied.")
+            print("Location Access Denied.")
         }
     }
 

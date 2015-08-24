@@ -69,7 +69,7 @@ class ModalExplanationViewController: UIViewController {
         case RotatedLeft
         case RotatedRight
         
-        func viewCenter(var center: CGPoint, var offsetFromCenter : CGFloat)->CGPoint {
+        func viewCenter(var center: CGPoint, offsetFromCenter : CGFloat)->CGPoint {
             switch self {
             case .RotatedLeft:
                 center.y += offsetFromCenter
@@ -151,11 +151,11 @@ class ModalExplanationViewController: UIViewController {
             self.currentExplanationView.removeFromSuperview()
         }
         
-        var newView = self.createExplanationViewForIndex(nextIndex)!
+        let newView = self.createExplanationViewForIndex(nextIndex)!
         
         self.view.addSubview(newView)
         
-        var center = CGPoint(x: CGRectGetWidth(view.bounds)/2, y: CGRectGetHeight(view.bounds)/2)
+        let center = CGPoint(x: CGRectGetWidth(view.bounds)/2, y: CGRectGetHeight(view.bounds)/2)
         snapBehavior = self.snapBehaviorForCenter(center, item: newView)
         
         attachmentBehavior = attachmentBehaviorForCenter(center, item: newView)
@@ -212,7 +212,7 @@ class ModalExplanationViewController: UIViewController {
             self.animator.removeBehavior(self.snapBehavior)
             self.animator.removeBehavior(self.attachmentBehavior)
             
-            var center = CGPoint(x: CGRectGetWidth(self.view.bounds)/2, y: CGRectGetHeight(self.view.bounds)/2)
+            let center = CGPoint(x: CGRectGetWidth(self.view.bounds)/2, y: CGRectGetHeight(self.view.bounds)/2)
             self.snapBehavior = self.snapBehaviorForCenter(center, item: snappedView)
             self.attachmentBehavior = self.attachmentBehaviorForCenter(center, item: snappedView)
             
@@ -259,7 +259,7 @@ class ModalExplanationViewController: UIViewController {
     }
     
     private func addConstraintsToNewView(view: UIView) {
-        view.setTranslatesAutoresizingMaskIntoConstraints(false)
+        view.translatesAutoresizingMaskIntoConstraints = false
         centerXOfView = NSLayoutConstraint(item: view, attribute: .CenterX, relatedBy: .Equal, toItem: self.view, attribute: .CenterX, multiplier: 1, constant: 0)
         
         centerYOfView = NSLayoutConstraint(item: view, attribute: .CenterY, relatedBy: .Equal, toItem: self.view, attribute: .CenterY, multiplier: 1, constant: 0)
@@ -435,7 +435,7 @@ class ModalExplanationViewController: UIViewController {
     private func resetExplanationView(ExplanationView: UIView, position: ExplanationViewPosition) {
         animator.removeAllBehaviors()
         
-        var center = CGPoint(x: CGRectGetWidth(view.bounds)/2, y: CGRectGetHeight(view.bounds)/2)
+        let center = CGPoint(x: CGRectGetWidth(view.bounds)/2, y: CGRectGetHeight(view.bounds)/2)
         ExplanationView.center = position.viewCenter(center , offsetFromCenter: offsetForExplanationView)
         ExplanationView.transform = position.viewTransform()
         

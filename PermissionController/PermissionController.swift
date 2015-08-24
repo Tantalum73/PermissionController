@@ -33,7 +33,7 @@ class PermissionController: NSObject, CLLocationManagerDelegate {
     /**
     Checks if the user agreed to let the app use the location.
     Requests the permission if it is not already granted.
-    :returns: true if user agreed false if not
+    - returns: true if user agreed false if not
     
     */
 
@@ -43,16 +43,16 @@ The user will be asked to give the permission by a dialog.
 
 When the user already granted his permission, the button is not enabled (early version, later: checkmark indication).
 
-:returns: Bool that is true, when requested permission is already granted.
+- returns: Bool that is true, when requested permission is already granted.
 If other permissions are missing, the PermissionView will be displayed.
     
-:param: viewController The UIViewController on which the PermissionView shall be presented.
+- parameter viewController: The UIViewController on which the PermissionView shall be presented.
     
-:param: interestedInPermission Indicates in which action the reuest is interested in. This value decides, whether the permission requesting was successful or not and therefore which completion block will be called.
+- parameter interestedInPermission: Indicates in which action the reuest is interested in. This value decides, whether the permission requesting was successful or not and therefore which completion block will be called.
     
-:param: successBlock This block will be executed on the main thread if the user dismissed the PermissionView and gave the desired permission.
+- parameter successBlock: This block will be executed on the main thread if the user dismissed the PermissionView and gave the desired permission.
     
-:param: failureBlock This block will be executed on the main thread if the user dismissed the PermissionView and did not gave the desired permission.
+- parameter failureBlock: This block will be executed on the main thread if the user dismissed the PermissionView and did not gave the desired permission.
 */
     
 
@@ -120,7 +120,7 @@ If other permissions are missing, the PermissionView will be displayed.
     
     
     //MARK: - CLLocationManagerDelegate
-    func locationManager(manager: CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
+    func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
         
         NSNotificationCenter.defaultCenter().postNotificationName("LocalizationAuthorizationStatusChanged", object: manager)
         NSNotificationCenter.defaultCenter().postNotificationName("AuthorizationStatusChanged", object: nil)
@@ -172,12 +172,12 @@ extension PermissionController: PermissionAskingProtocol {
         if defaults.boolForKey("LocationPermission") == true || CLLocationManager.authorizationStatus() == CLAuthorizationStatus.AuthorizedAlways {
             status.permissionLocationGranted = true
         }
-        if NSUserDefaults.standardUserDefaults().boolForKey("CalendarPermission") == true || EKEventStore.authorizationStatusForEntityType(EKEntityTypeEvent) == EKAuthorizationStatus.Authorized {
+        if NSUserDefaults.standardUserDefaults().boolForKey("CalendarPermission") == true || EKEventStore.authorizationStatusForEntityType(EKEntityType.Event) == EKAuthorizationStatus.Authorized {
             status.permissionCalendarGranted = true
         }
         let registeredNotificationSettigns = UIApplication.sharedApplication().currentUserNotificationSettings()
         
-        if registeredNotificationSettigns.types.rawValue != 0 || defaults.boolForKey("NotificationPermission") == true {
+        if registeredNotificationSettigns?.types.rawValue != 0 || defaults.boolForKey("NotificationPermission") == true {
             //Some notifications are registered or already asked (probably both)
             
             status.permissionNotificationGranted = true
@@ -197,7 +197,7 @@ extension PermissionController: PermissionAskingProtocol {
         self.locationManager?.requestAlwaysAuthorization()
     }
     func permissionButtonCalendarPressed() {
-        let status = EKEventStore.authorizationStatusForEntityType(EKEntityTypeEvent)
+        let status = EKEventStore.authorizationStatusForEntityType(EKEntityType.Event)
         if status == EKAuthorizationStatus.Denied {
             sendUserToSettings()
             return
@@ -206,7 +206,7 @@ extension PermissionController: PermissionAskingProtocol {
         NSUserDefaults.standardUserDefaults().setBool(true, forKey: "CalendarPermissionWasAskedOnce")
         
         self.eventStore = EKEventStore()
-        self.eventStore?.requestAccessToEntityType(EKEntityTypeEvent, completion: { (granted: Bool, error: NSError!) -> Void in
+        self.eventStore?.requestAccessToEntityType(EKEntityType.Event, completion: { (granted: ObjCBool, error: NSError?) -> Void in
             
             let defaults = NSUserDefaults.standardUserDefaults()
 
@@ -232,7 +232,7 @@ extension PermissionController: PermissionAskingProtocol {
         let defaults = NSUserDefaults.standardUserDefaults()
         let registeredNotificationSettigns = UIApplication.sharedApplication().currentUserNotificationSettings()
         
-        if registeredNotificationSettigns.types.rawValue == 0 && defaults.boolForKey("NotificationPermissionWasAskedOnce") == true {
+        if registeredNotificationSettigns?.types.rawValue == 0 && defaults.boolForKey("NotificationPermissionWasAskedOnce") == true {
             //Some notifications are registered or already asked (probably both)
             
             sendUserToSettings()
@@ -241,7 +241,7 @@ extension PermissionController: PermissionAskingProtocol {
         
         defaults.setBool(true, forKey: "NotificationPermissionWasAskedOnce")
         
-        let desiredNotificationSettigns = UIUserNotificationSettings(forTypes: UIUserNotificationType.Alert | .Badge | .Sound , categories: nil)
+        let desiredNotificationSettigns = UIUserNotificationSettings(forTypes: [UIUserNotificationType.Alert, .Badge, .Sound] , categories: nil)
         
         UIApplication.sharedApplication().registerUserNotificationSettings(desiredNotificationSettigns)
     }
@@ -254,29 +254,29 @@ extension UIColor {
     /**
     returns UIColor from given hex value.
     
-    :param: hex the hex value to be converted to uicolor
+    - parameter hex: the hex value to be converted to uicolor
     
-    :param: alpha the alpha value of the color
+    - parameter alpha: the alpha value of the color
     
-    :returns: the UIColor corresponding to the given hex and alpha value
+    - returns: the UIColor corresponding to the given hex and alpha value
     
     */
     class func colorFromHex (hex: Int, alpha: Double = 1.0) -> UIColor {
         let red = Double((hex & 0xFF0000) >> 16) / 255.0
         let green = Double((hex & 0xFF00) >> 8) / 255.0
         let blue = Double((hex & 0xFF)) / 255.0
-        var color: UIColor = UIColor( red: CGFloat(red), green: CGFloat(green), blue: CGFloat(blue), alpha:CGFloat(alpha) )
+        let color: UIColor = UIColor( red: CGFloat(red), green: CGFloat(green), blue: CGFloat(blue), alpha:CGFloat(alpha) )
         return color
     }
     
     /**
     returns UIColor from rgb value.
     
-    :param: red the r value
+    - parameter red: the r value
     
-    :param: green the g value
+    - parameter green: the g value
     
-    :param: blue the b value
+    - parameter blue: the b value
     
     */
     class func colorFromRGB (red: Int, green: Int, blue: Int) -> UIColor {
