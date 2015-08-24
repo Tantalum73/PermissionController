@@ -10,7 +10,7 @@ import UIKit
 
 
 
-private let kExplainationViewHeightPercentagePortrait = 0.7
+private let kExplainationViewHeightPercentagePortrait = 0.8
 private let kExplainationViewHeightPercentageLandscape = 0.9
 
 private let kExplainationViewWidthPercentagePortrait = 0.9
