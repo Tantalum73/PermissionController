@@ -206,7 +206,7 @@ extension PermissionController: PermissionAskingProtocol {
         NSUserDefaults.standardUserDefaults().setBool(true, forKey: "CalendarPermissionWasAskedOnce")
         
         self.eventStore = EKEventStore()
-        self.eventStore?.requestAccessToEntityType(EKEntityType.Event, completion: { (granted: ObjCBool, error: NSError?) -> Void in
+        self.eventStore?.requestAccessToEntityType(EKEntityType.Event, completion: { (granted: Bool, error: NSError?) -> Void in
             
             let defaults = NSUserDefaults.standardUserDefaults()
 
