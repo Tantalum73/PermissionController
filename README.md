@@ -16,7 +16,8 @@ Due to the fact, that you only have one try to get the permission (iOS will not 
 Using the **PermissionController**, it is easy for you as a developer to ask when the time is right. 
 In addition to that, the user has to trigger the system dialog actively, what means that he already made the decision of agreeing with your request.
 
-I have written down my thoughts on this topic in my [blog](https://anerma.de/blog).
+In my [blog](https://anerma.de/blog), I posted some thougths about [how to ask the user about permissions](https://anerma.de/blog/asking-about-permissions) and also wrote some more about [this project and how to use it](https://anerma.de/blog/open-source-project-permissioncontroller).
+
 
 
 
