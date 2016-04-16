@@ -69,7 +69,9 @@ class ModalExplanationViewController: UIViewController {
         case RotatedLeft
         case RotatedRight
         
-        func viewCenter(var center: CGPoint, offsetFromCenter : CGFloat)->CGPoint {
+        func viewCenter(center: CGPoint, offsetFromCenter : CGFloat)->CGPoint {
+            var center = center
+            
             switch self {
             case .RotatedLeft:
                 center.y += offsetFromCenter
@@ -135,7 +137,7 @@ class ModalExplanationViewController: UIViewController {
         
         self.addBehaiviorsAndViewForIndex(0, position: .RotatedRight)
         
-        let pan = UIPanGestureRecognizer(target: self, action: "panExplanationView:")
+        let pan = UIPanGestureRecognizer(target: self, action: #selector(ModalExplanationViewController.panExplanationView(_:)))
         self.view.addGestureRecognizer(pan)
     }
     
@@ -176,13 +178,13 @@ class ModalExplanationViewController: UIViewController {
        
         if let correctView = generalView as? PermissionView {
 
-            NSNotificationCenter.defaultCenter().addObserver(self, selector:"updateButtonAppearenceBasedOnCurrentSetOfPermissions" , name: "AuthorizationStatusChanged", object: nil)
+            NSNotificationCenter.defaultCenter().addObserver(self, selector:#selector(ModalExplanationViewController.updateButtonAppearenceBasedOnCurrentSetOfPermissions) , name: "AuthorizationStatusChanged", object: nil)
             
             correctView.progressView.progress = 1.0
-            correctView.locationButton.addTarget(self, action: "permissionButtonLocationPressed", forControlEvents: .TouchUpInside)
-            correctView.calendarButton.addTarget(self, action: "permissionButtonCalendarPressed", forControlEvents: .TouchUpInside)
-            correctView.notificationButton.addTarget(self, action: "permissionButtonNotificationPressed", forControlEvents: .TouchUpInside)
-            correctView.doneButton.addTarget(self, action: "doneButtonPressed", forControlEvents: .TouchUpInside)
+            correctView.locationButton.addTarget(self, action: #selector(ModalExplanationViewController.permissionButtonLocationPressed), forControlEvents: .TouchUpInside)
+            correctView.calendarButton.addTarget(self, action: #selector(ModalExplanationViewController.permissionButtonCalendarPressed), forControlEvents: .TouchUpInside)
+            correctView.notificationButton.addTarget(self, action: #selector(ModalExplanationViewController.permissionButtonNotificationPressed), forControlEvents: .TouchUpInside)
+            correctView.doneButton.addTarget(self, action: #selector(ModalExplanationViewController.doneButtonPressed), forControlEvents: .TouchUpInside)
             updateButtonAppearenceBasedOnCurrentSetOfPermissions()
         }
         
@@ -301,12 +303,12 @@ class ModalExplanationViewController: UIViewController {
                 var nextPosition = ExplanationViewPosition.RotatedLeft
                 
                 if velocity > 0 && offset > 0 {
-                    nextIndex--
+                    nextIndex -= 1
                     nextPosition = .RotatedLeft
                     position = .RotatedRight
                 }
                 else {
-                    nextIndex++
+                    nextIndex += 1
                     nextPosition = .RotatedRight
                     position = .RotatedLeft
                 }
@@ -391,7 +393,7 @@ class ModalExplanationViewController: UIViewController {
         self.animator.removeAllBehaviors()
         
         self.animateTheCurrentViewToPosition(ExplanationViewPosition.RotatedRight, completion: { () -> Void in
-            self.index--
+            self.index -= 1
             self.addBehaiviorsAndViewForIndex(self.index, position: ExplanationViewPosition.RotatedLeft)
         })
         
@@ -400,7 +402,7 @@ class ModalExplanationViewController: UIViewController {
         self.animator.removeAllBehaviors()
         
         self.animateTheCurrentViewToPosition(ExplanationViewPosition.RotatedLeft, completion: { () -> Void in
-            self.index++
+            self.index -= 1
             self.addBehaiviorsAndViewForIndex(self.index, position: ExplanationViewPosition.RotatedRight)
         })
     }
