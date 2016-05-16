@@ -7,7 +7,7 @@ Currently supported are permissions for
 * Notifications
 
 
-![Screencast of the PermissionController on an iPhone](/Media/sample_video.gif?raw=true "Screencast of the PermissionController on an iPhone"  = 200px) 
+![Screencast of the PermissionController on an iPhone](/Media/sample_video.gif?raw=true "Screencast of the PermissionController on an iPhone"  = 150px) 
 
 ##Benefits
 As test have shown, the right time to ask about a permission is when the user wants to execute an action.
