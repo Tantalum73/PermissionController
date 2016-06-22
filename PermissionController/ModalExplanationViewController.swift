@@ -9,11 +9,15 @@
 import UIKit
 
 
-
+/// Constant that defines the height of the displayed view in portrait modus in percentage of the mainScreen() size.
 private let kExplainationViewHeightPercentagePortrait = 0.8
+/// Constant that defines the height of the displayed view in landscape modus in percentage of the mainScreen() size.
 private let kExplainationViewHeightPercentageLandscape = 0.9
 
+/// Constant that defines the width of the displayed view in portrait modus in percentage of the mainScreen() size.
 private let kExplainationViewWidthPercentagePortrait = 0.9
+
+/// Constant that defines the width of the displayed view in landscape modus in percentage of the mainScreen() size.
 private let kExplainationViewWidthPercentageLandscape = 0.9
 
 
@@ -22,7 +26,7 @@ private let kExplainationViewWidthPercentageLandscape = 0.9
  */
 struct StatusOfPermissions {
     //TODO: evtl. enum to express more values
-    //TODO: save global state fo this struct to disk to prevent from checking every time again
+    //TODO: save global state of this struct to disk to prevent from checking every time again
     
         /// User has allowed the app to use their location.
     var permissionLocationGranted = false
@@ -37,22 +41,22 @@ struct StatusOfPermissions {
  */
 protocol PermissionAskingProtocol {
     /**
-     Captures the current state of permissions. The implementing method gatheres whether StatusOfPermissions struct that encapsulates if the user has granted or declined permissions (eg for location or notification access).
+     Captures the current state of permissions. The implementing method gathers whether StatusOfPermissions struct that encapsulates if the user has granted or declined permissions (eg for location or notification access).
      
      - returns: StatusOfPermissions that encapsulates the current permission statuses.
      */
     func stateOfPermissions() -> StatusOfPermissions
     
     /**
-     This method will be called when the user tapps on the 'request location permission' button in the view.
+     This method will be called when the user taps on the 'request location permission' button in the view.
      */
     func permissionButtonLocationPressed()
     /**
-     This method will be called when the user tapps on the 'request calendar access permission' button in the view.
+     This method will be called when the user taps on the 'request calendar access permission' button in the view.
      */
     func permissionButtonCalendarPressed()
     /**
-     This method will be called when the user tapps on the 'request notification permission' button in the view.
+     This method will be called when the user taps on the 'request notification permission' button in the view.
      */
     func permissionButtonNotificationPressed()
 }
@@ -97,7 +101,7 @@ class ModalExplanationViewController: UIViewController {
         /// Constraint that defines the centerY of the view.
     private var centerYOfView : NSLayoutConstraint!
     
-    
+        /// Index of the currently displayed view.
     private var index = 0
     
     
