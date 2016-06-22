@@ -17,19 +17,43 @@ private let kExplainationViewWidthPercentagePortrait = 0.9
 private let kExplainationViewWidthPercentageLandscape = 0.9
 
 
-
+/**
+ *  Struct that captures state of the permissions that are granted or not.
+ */
 struct StatusOfPermissions {
     //TODO: evtl. enum to express more values
     //TODO: save global state fo this struct to disk to prevent from checking every time again
+    
+        /// User has allowed the app to use their location.
     var permissionLocationGranted = false
+        /// User has allowed the app to use their calendar.
     var permissionCalendarGranted = false
+        /// User has allowed the app to use send them notifications.
     var permissionNotificationGranted = false
 }
 
+/**
+ *  Implement this protocol if you want to provide methods that handle button presses. It also must provide the current state of permissions as a StatusOfPermissions struct.
+ */
 protocol PermissionAskingProtocol {
+    /**
+     Captures the current state of permissions. The implementing method gatheres whether StatusOfPermissions struct that encapsulates if the user has granted or declined permissions (eg for location or notification access).
+     
+     - returns: StatusOfPermissions that encapsulates the current permission statuses.
+     */
     func stateOfPermissions() -> StatusOfPermissions
+    
+    /**
+     This method will be called when the user tapps on the 'request location permission' button in the view.
+     */
     func permissionButtonLocationPressed()
+    /**
+     This method will be called when the user tapps on the 'request calendar access permission' button in the view.
+     */
     func permissionButtonCalendarPressed()
+    /**
+     This method will be called when the user tapps on the 'request notification permission' button in the view.
+     */
     func permissionButtonNotificationPressed()
 }
 
@@ -117,6 +141,7 @@ class ModalExplanationViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
+    
     func presentExplanationViewControllerOnViewController(viewController : UIViewController, nameOfNibs: [String], completion:((finishedWithSuccess : Bool)->())?) {
         self.nameOfNibs = nameOfNibs
         
