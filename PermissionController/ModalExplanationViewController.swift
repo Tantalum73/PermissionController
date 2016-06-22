@@ -104,12 +104,29 @@ class ModalExplanationViewController: UIViewController {
         /// Index of the currently displayed view.
     private var index = 0
     
-    
+    /**
+     Enum that defines possible states of the view.
+     
+     - Default:      Default position.
+     - RotatedLeft:  The view is rotated left: by M_PI_2 clockwise.
+     - RotatedRight: The view is rotated right: by M_PI_2 counter clockwise.
+     */
     enum ExplanationViewPosition: Int {
+        /// Default position.
         case Default
+        /// The view is rotated left: by M_PI_2 clockwise.
         case RotatedLeft
+        /// The view is rotated right: by M_PI_2 counter clockwise.
         case RotatedRight
         
+        /**
+         Calculates the center of the view based on its current state (rotation).
+         
+         - parameter center:           The center of views superview
+         - parameter offsetFromCenter: Offset from the views superviews center (usually below the lower bound of the screen)
+         
+         - returns: The center of the view based on its current state (rotation).
+         */
         func viewCenter(center: CGPoint, offsetFromCenter : CGFloat)->CGPoint {
             var center = center
             
@@ -128,6 +145,11 @@ class ModalExplanationViewController: UIViewController {
             return center
         }
         
+        /**
+         Translates the rotation (cases of enum) into CGAffineTransform that can be applied to the view.
+         
+         - returns: CGAffineTransform, a rotation clockwise or counter clockwise depending on the current state.
+         */
         func viewTransform() -> CGAffineTransform {
             switch self {
             case .RotatedRight:
