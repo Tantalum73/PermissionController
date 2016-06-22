@@ -57,31 +57,44 @@ protocol PermissionAskingProtocol {
     func permissionButtonNotificationPressed()
 }
 
+/// ModalExplanationViewController is responsible for presenting the PermissionView and handling user interactions like swiping or tapping on a button.
 class ModalExplanationViewController: UIViewController {
     
     
-    
+        /// The permissionActionHandler is of type PermissionAskingProtocol and is needed to populate the view with the current permission statuses as well as acting on button-action methods.
     var permissionActionHandler : PermissionAskingProtocol?
     
+        /// Name of the nibs that should be presented in this modal-carousel style.
     private var nameOfNibs : [String]!
+    
+        /// Completion block that is executed after the user has dismissed the dialog.
     private var completion : ((finishedWithSuccess : Bool)->())?
     
+        /// Offset by which the presented view will be translated down before animating in.
     private lazy var offsetForExplanationView : CGFloat = {
         let heightOfScreen = UIScreen.mainScreen().bounds.size.height
         
         return heightOfScreen
     }()
     
+        /// UIDynamicAnimator for driving the interaction
     private var animator : UIDynamicAnimator!
+        /// UIAttachmentBehavior for attaching the view to the bottom and thereby achieving a rotation.
     private var attachmentBehavior : UIAttachmentBehavior!
+        /// UISnapBehavior for snapping the view to the center.
     private var snapBehavior : UISnapBehavior!
+        ///UIAttachmentBehavior that is attached when the user pans the view.
     private var panBehavior : UIAttachmentBehavior!
+        /// The current view that is visible on the screen.
     private var currentExplanationView : UIView!
     
-    
+        /// Constraint that defines the width of the view. Derived from kExplainationViewWidthPercentagePortrait and kExplainationViewWidthPercentageLandscape.
     private var widthOfView : NSLayoutConstraint!
+    /// Constraint that defines the height of the view. Derived from kExplainationViewHeightPercentagePortrait and kExplainationViewHeightPercentageLandscape.
     private var heightOfView : NSLayoutConstraint!
+        /// Constraint that defines the centerX of the view.
     private var centerXOfView : NSLayoutConstraint!
+        /// Constraint that defines the centerY of the view.
     private var centerYOfView : NSLayoutConstraint!
     
     
