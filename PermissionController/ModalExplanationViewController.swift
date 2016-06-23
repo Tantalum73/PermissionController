@@ -180,7 +180,13 @@ class ModalExplanationViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
-    
+    /**
+     This method starts the presentation of specified views in the typical animated and interactive way. The ViewController transition will be started in this method. Therefore, you just have to call it and the transition/animation begins.
+     
+     - parameter viewController: The ViewController that is currently presented an will be overlayed by the new ViewController.
+     - parameter nameOfNibs:     Name of the nibs that will be presented and animated.
+     - parameter completion:     A completion block that will be executed when the interaction has finished: the user has swiped through the views (from right to left, every view was presented, `finishedWithSuccess=true` or dismissed the first one (first view came from right and was pushed rightwards, too, `finishedWithSuccess=false`).
+     */
     func presentExplanationViewControllerOnViewController(viewController : UIViewController, nameOfNibs: [String], completion:((finishedWithSuccess : Bool)->())?) {
         self.nameOfNibs = nameOfNibs
         
