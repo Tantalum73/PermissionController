@@ -214,6 +214,12 @@ class ModalExplanationViewController: UIViewController {
         self.view.addGestureRecognizer(pan)
     }
     
+    /**
+     Adds UIDynamics behaviors to a view at a given index. Therefore, a new view is loaded from nib (using `createExplanationViewForIndex()`). The new view is added to the view hirachy, constraints are added and it prepared for presentation by using `resetExplanationView()`.
+     
+     - parameter nextIndex: Index of the next view that should be loaded from a nib. The name is stored in the global `nameOfNibs` array.
+     - parameter position:  Position in which the new view should be started from (`.RotatedRight` in most cases)
+     */
     private func addBehaiviorsAndViewForIndex(nextIndex:Int, position: ExplanationViewPosition) {
         
         
