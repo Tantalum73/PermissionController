@@ -202,6 +202,9 @@ class ModalExplanationViewController: UIViewController {
     
     // MARK: - Setup Everything
     
+    /**
+     Sets up the UIDynamicAnimator and attaches the first view as well as the gestureRecognizer.
+     */
     private func setupAnimator() {
         animator = UIDynamicAnimator(referenceView: self.view)
         
