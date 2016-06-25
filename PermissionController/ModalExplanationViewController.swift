@@ -246,7 +246,17 @@ class ModalExplanationViewController: UIViewController {
         newView.transform = CGAffineTransformConcat(newView.transform, CGAffineTransformMakeTranslation(0, -offsetForExplanationView))
     }
 
+    /**
+     Creates a new view and configures it. If you want to use custom views, put your custom preparation code in here.
+     For now, if a `PermissionView` is loaded, the button are linked to their actions and styled using the method `updateButtonAppearenceBasedOnCurrentSetOfPermissions()`.
+     The view itself is loaded from a nib, its name is spacified in the `nameOfNibs` array.
+     
+     - parameter index: Index of the view in the `nameOfNibs` array.
+     
+     - returns: A styled and configured UIView if the nib name was valid, nil if not.
+     */
     private func createExplanationViewForIndex(index: Int) -> UIView? {
+        
         let generalView: UIView = UINib(nibName: String(self.nameOfNibs[index]), bundle: nil).instantiateWithOwner(nil, options: nil).first as! UIView
         
 //        generalView.frame = CGRect(x: 0, y: 0, width: kExplanationViewWidth, height: kExplanationViewHeight)
