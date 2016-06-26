@@ -62,7 +62,7 @@ protocol PermissionAskingProtocol {
 }
 
 /// ModalExplanationViewController is responsible for presenting the PermissionView and handling user interactions like swiping or tapping on a button.
-class ModalExplanationViewController: UIViewController {
+final class ModalExplanationViewController: UIViewController {
     
     
         /// The permissionActionHandler is of type PermissionAskingProtocol and is needed to populate the view with the current permission statuses as well as acting on button-action methods.
@@ -187,7 +187,7 @@ class ModalExplanationViewController: UIViewController {
      - parameter nameOfNibs:     Name of the nibs that will be presented and animated.
      - parameter completion:     A completion block that will be executed when the interaction has finished: the user has swiped through the views (from right to left, every view was presented, `finishedWithSuccess=true` or dismissed the first one (first view came from right and was pushed rightwards, too, `finishedWithSuccess=false`).
      */
-    func presentExplanationViewControllerOnViewController(viewController : UIViewController, nameOfNibs: [String], completion:((finishedWithSuccess : Bool)->())?) {
+    public func presentExplanationViewControllerOnViewController(viewController : UIViewController, nameOfNibs: [String], completion:((finishedWithSuccess : Bool)->())?) {
         self.nameOfNibs = nameOfNibs
         
         self.completion = completion
@@ -280,7 +280,10 @@ class ModalExplanationViewController: UIViewController {
         return generalView
 
     }
-    func updateButtonAppearenceBasedOnCurrentSetOfPermissions() {
+    /**
+     This method is being called when any authorization status has changed. It asks the `permissionActionHandler` about the current set of granted permissions and forewards it to the currently displayed view that will update its UI accordingly.
+     */
+    @objc private func updateButtonAppearenceBasedOnCurrentSetOfPermissions() {
         //update the buttons.
         
         if let statusOfPermissions = permissionActionHandler?.stateOfPermissions(), let currentPermissionView = currentExplanationView as? PermissionView  {
