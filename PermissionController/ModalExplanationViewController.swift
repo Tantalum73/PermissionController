@@ -302,6 +302,12 @@ final class ModalExplanationViewController: UIViewController {
         super.willTransitionToTraitCollection(newCollection, withTransitionCoordinator: coordinator)
         
         coordinator.animateAlongsideTransition({ context in
+            /*
+             Basically we need to update the view to match the new orientation.
+             Therefore we remove behaviours, update and add them again.
+             Additionally, we remove constraints from the old orientation and add new ones to reflect the size change.
+             */
+            
             let snappedView = self.currentExplanationView
             self.animator.removeBehavior(self.snapBehavior)
             self.animator.removeBehavior(self.attachmentBehavior)
@@ -328,6 +334,14 @@ final class ModalExplanationViewController: UIViewController {
             }))
     }
     
+    /**
+     Convenience method for creating a UISnapBehavior that is added to the `item` and connects it to the `center`.
+     
+     - parameter center: Point to which the spring should snap to.
+     - parameter item:   The `UIView` to which the spring is applied.
+     
+     - returns: A UISnapBehavior attached to the specified view snapping it to the specified center.
+     */
     private func snapBehaviorForCenter(center: CGPoint, item: UIView) -> UISnapBehavior {
         return UISnapBehavior(item: item, snapToPoint: center)
     }
