@@ -335,7 +335,7 @@ final class ModalExplanationViewController: UIViewController {
     }
     
     /**
-     Convenience method for creating a UISnapBehavior that is added to the `item` and connects it to the `center`.
+     Convenience method for creating a UISnapBehavior that is added to the `item` and connects it to the `center`. When the view is attached to a point below the screen and snapped into the center, we achieve our desired rotation effect.
      
      - parameter center: Point to which the spring should snap to.
      - parameter item:   The `UIView` to which the spring is applied.
@@ -345,23 +345,53 @@ final class ModalExplanationViewController: UIViewController {
     private func snapBehaviorForCenter(center: CGPoint, item: UIView) -> UISnapBehavior {
         return UISnapBehavior(item: item, snapToPoint: center)
     }
+    
+    /**
+     Convenience method for creating a UIAttachmentBehavior that is added to the `item`. It attaches the view to a point moved in y directon downwards by `offsetForExplanationView`. When the view is attached to a point below the screen and snapped into the center, we achieve our desired rotation effect.
+     
+     - parameter center: The center to whcih the item should be attached to. It will be moved downwards in y direction.
+     - parameter item:   The `UIView` to which the spring is applied.
+     
+     - returns: A UIAttachmentBehavior that attaches the `item` to a point below the screen (specified by `center` and moved downwards by `offsetForExplanationView`.
+     */
     private func attachmentBehaviorForCenter(center: CGPoint, item: UIView) -> UIAttachmentBehavior {
         var newCenter = center
         newCenter.y += offsetForExplanationView
         
         return UIAttachmentBehavior(item: item, offsetFromCenter: UIOffset(horizontal: 0, vertical: offsetForExplanationView), attachedToAnchor: newCenter)
     }
+    
+    /**
+     Convenience method for creating a NSLayoutConstraint that specifies the width of the displayed view. It depends on `isWiderThanHeigh()` to use either `kExplainationViewWidthPercentageLandscape` or `kExplainationViewWidthPercentagePortrait`. The percentage relates to the size of the window-filling superview.
+     
+     - parameter view: The view in which the smaller view is presented.
+     
+     - returns: NSLayoutConstraint that specifies width of view.
+     */
     private func constraintWidthForExplanationView(view: UIView) -> NSLayoutConstraint {
         let multiplier : CGFloat = isWiderThanHeigh() ? CGFloat(kExplainationViewWidthPercentageLandscape) : CGFloat(kExplainationViewWidthPercentagePortrait)
         
         return NSLayoutConstraint(item: view, attribute: .Width, relatedBy: .Equal, toItem: self.view, attribute: .Width, multiplier: multiplier, constant: 0)
     }
+    
+    /**
+     Convenience method for creating a NSLayoutConstraint that specifies the height of the displayed view. It depends on `isWiderThanHeigh()` to use either `kExplainationViewHeightPercentageLandscape` or `kExplainationViewHeightPercentagePortrait`. The percentage relates to the size of the window-filling superview.
+     
+     - parameter view: The view in which the smaller view is presented.
+     
+     - returns: NSLayoutConstraint that specifies height of view.
+     */
     private func constraintHeightForExplanationView(view: UIView) -> NSLayoutConstraint {
         let multiplier : CGFloat = isWiderThanHeigh() ? CGFloat(kExplainationViewHeightPercentageLandscape) : CGFloat(kExplainationViewHeightPercentagePortrait)
         
         return NSLayoutConstraint(item: view, attribute: .Height, relatedBy: .Equal, toItem: self.view, attribute: .Height, multiplier: multiplier, constant: 0)
     }
     
+    /**
+     Method to determine if the screen is oriented in portrait or landscape. To be more generic it only relays on the height and width of the main view.
+     
+     - returns: True if the view is wider than height.
+     */
     private func isWiderThanHeigh() -> Bool {
         return CGRectGetWidth(self.view.bounds) > CGRectGetHeight(self.view.bounds)
     }
