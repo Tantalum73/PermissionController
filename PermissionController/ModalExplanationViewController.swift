@@ -3,7 +3,7 @@
 //  ClubNews
 //
 //  Created by Andreas Neusüß on 22.03.15.
-//  Copyright (c) 2015 Cocoawah. All rights reserved.
+//  Copyright (c) 2015 Anerma. All rights reserved.
 //
 
 import UIKit
@@ -183,7 +183,7 @@ final public class ModalExplanationViewController: UIViewController {
     /**
      This method starts the presentation of specified views in the typical animated and interactive way. The ViewController transition will be started in this method. Therefore, you just have to call it and the transition/animation begins.
      
-     - parameter viewController: The ViewController that is currently presented an will be overlayed by the new ViewController.
+     - parameter viewController: The ViewController that is currently presented an will be overlaid by the new ViewController.
      - parameter nameOfNibs:     Name of the nibs that will be presented and animated.
      - parameter completion:     A completion block that will be executed when the interaction has finished: the user has swiped through the views (from right to left, every view was presented, `finishedWithSuccess=true` or dismissed the first one (first view came from right and was pushed rightwards, too, `finishedWithSuccess=false`).
      */
@@ -215,7 +215,7 @@ final public class ModalExplanationViewController: UIViewController {
     }
     
     /**
-     Adds UIDynamics behaviors to a view at a given index. Therefore, a new view is loaded from nib (using `createExplanationViewForIndex()`). The new view is added to the view hirachy, constraints are added and it prepared for presentation by using `resetExplanationView()`.
+     Adds UIDynamics behaviors to a view at a given index. Therefore, a new view is loaded from nib (using `createExplanationViewForIndex()`). The new view is added to the view hierarchy, constraints are added and it prepared for presentation by using `resetExplanationView()`.
      
      - parameter nextIndex: Index of the next view that should be loaded from a nib. The name is stored in the global `nameOfNibs` array.
      - parameter position:  Position in which the new view should be started from (`.RotatedRight` in most cases)
@@ -249,7 +249,7 @@ final public class ModalExplanationViewController: UIViewController {
     /**
      Creates a new view and configures it. If you want to use custom views, put your custom preparation code in here.
      For now, if a `PermissionView` is loaded, the button are linked to their actions and styled using the method `updateButtonAppearenceBasedOnCurrentSetOfPermissions()`.
-     The view itself is loaded from a nib, its name is spacified in the `nameOfNibs` array.
+     The view itself is loaded from a nib, its name is specified in the `nameOfNibs` array.
      
      - parameter index: Index of the view in the `nameOfNibs` array.
      
@@ -281,7 +281,7 @@ final public class ModalExplanationViewController: UIViewController {
 
     }
     /**
-     This method is being called when any authorization status has changed. It asks the `permissionActionHandler` about the current set of granted permissions and forewards it to the currently displayed view that will update its UI accordingly.
+     This method is being called when any authorization status has changed. It asks the `permissionActionHandler` about the current set of granted permissions and forwards it to the currently displayed view that will update its UI accordingly.
      */
     @objc private func updateButtonAppearenceBasedOnCurrentSetOfPermissions() {
         //update the buttons.
@@ -304,7 +304,7 @@ final public class ModalExplanationViewController: UIViewController {
         coordinator.animateAlongsideTransition({ context in
             /*
              Basically we need to update the view to match the new orientation.
-             Therefore we remove behaviours, update and add them again.
+             Therefore we remove behaviors, update and add them again.
              Additionally, we remove constraints from the old orientation and add new ones to reflect the size change.
              */
             
@@ -347,9 +347,9 @@ final public class ModalExplanationViewController: UIViewController {
     }
     
     /**
-     Convenience method for creating a UIAttachmentBehavior that is added to the `item`. It attaches the view to a point moved in y directon downwards by `offsetForExplanationView`. When the view is attached to a point below the screen and snapped into the center, we achieve our desired rotation effect.
+     Convenience method for creating a UIAttachmentBehavior that is added to the `item`. It attaches the view to a point moved in y direction downwards by `offsetForExplanationView`. When the view is attached to a point below the screen and snapped into the center, we achieve our desired rotation effect.
      
-     - parameter center: The center to whcih the item should be attached to. It will be moved downwards in y direction.
+     - parameter center: The center to which the item should be attached to. It will be moved downwards in y direction.
      - parameter item:   The `UIView` to which the spring is applied.
      
      - returns: A UIAttachmentBehavior that attaches the `item` to a point below the screen (specified by `center` and moved downwards by `offsetForExplanationView`.
@@ -636,8 +636,8 @@ final public class ModalExplanationViewController: UIViewController {
     /**
      Resets a given view to default values and adds default behaviors. Thereby it is placed below the screen and rotated to the given direction.
      
-     - parameter explanationView: The view that shall be resetted
-     - parameter position:        Position to which the new view should be resettet to.
+     - parameter explanationView: The view that shall be reset
+     - parameter position:        Position to which the new view should be reset to.
      */
     private func resetExplanationView(explanationView: UIView, position: ExplanationViewPosition) {
         animator.removeAllBehaviors()
