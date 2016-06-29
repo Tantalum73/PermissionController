@@ -536,37 +536,37 @@ final public class ModalExplanationViewController: UIViewController {
     }
     
     //MARK: - Button Methods
+    /**
+     The user pressed a skip button, all the views will be skipped and the completion handler will be called with unfinished flag.
+     */
     func skipButtonPressed() {
         self.animator.removeAllBehaviors()
         self.animateTheCurrentViewToPosition(ExplanationViewPosition.RotatedLeft, completion: { () -> Void in
             self.dismissAndCallCompletionAccordinglyWithSuccess(false)
-//            self.dismissViewControllerAnimated(true, completion: {
-//                
-//                self.completion?(finishedWithSuccess: false)
-//            })
         })
     }
+    /**
+     The user pressed done button, the last view was presented and now the completion handler will be called with finished flag.
+     */
     func doneButtonPressed() {
         self.animator.removeAllBehaviors()
         self.animateTheCurrentViewToPosition(ExplanationViewPosition.RotatedLeft, completion: { () -> Void in
             self.dismissAndCallCompletionAccordinglyWithSuccess(true)
-//            self.dismissViewControllerAnimated(true, completion: {
-//                
-//                self.completion?(finishedWithSuccess: true)
-//            })
         })
     }
+    /**
+     The user pressed a decline button, all the views will be skipped and the completion handler will be called with unfinished flag.
+     */
     func declineButtonPressed() {
         self.animator.removeAllBehaviors()
         self.animateTheCurrentViewToPosition(ExplanationViewPosition.RotatedRight, completion: { () -> Void in
             self.dismissAndCallCompletionAccordinglyWithSuccess(false)
-//            self.dismissViewControllerAnimated(true, completion: {
-//                
-//                self.completion?(finishedWithSuccess: false)
-//            })
         })
     }
     
+    /**
+     The user pressed a back button which will cause the next view being loaded and presented using an animation.
+     */
     func backButtonPressed() {
         self.animator.removeAllBehaviors()
         
@@ -576,28 +576,49 @@ final public class ModalExplanationViewController: UIViewController {
         })
         
     }
+    
+    /**
+     The user pressed a skip button which will cause the next view being loaded and presented using an animation.
+     */
     func continueButtonPressed() {
         self.animator.removeAllBehaviors()
         
         self.animateTheCurrentViewToPosition(ExplanationViewPosition.RotatedLeft, completion: { () -> Void in
-            self.index -= 1
+            self.index += 1
             self.addBehaiviorsAndViewForIndex(self.index, position: ExplanationViewPosition.RotatedRight)
         })
     }
     
+    /**
+     Function that wraps a call to the `permissionActionHandler`. It is called when the location permission button is pressed and asks the `permissionActionHandler` to handle the action.
+     */
     func permissionButtonLocationPressed() {
         permissionActionHandler?.permissionButtonLocationPressed()
     }
+    /**
+     Function that wraps a call to the `permissionActionHandler`. It is called when the calendar permission button is pressed and asks the `permissionActionHandler` to handle the action.
+     */
     func permissionButtonCalendarPressed() {
         permissionActionHandler?.permissionButtonCalendarPressed()
         
     }
+    /**
+     Function that wraps a call to the `permissionActionHandler`. It is called when the notification permission button is pressed and asks the `permissionActionHandler` to handle the action.
+     */
     func permissionButtonNotificationPressed() {
         permissionActionHandler?.permissionButtonNotificationPressed()
         
     }
     
+    /**
+     This method animates the current view into a given position. The animation looks like the user has performed the swipe but in reality it is a static animation. Use this method if you want to dismiss a view programatically and animated.
+     
+     - parameter position:   The position in which the current view should be animated to.
+     - parameter completion: Completion handler that is called after the animation finished.
+     */
     private func animateTheCurrentViewToPosition(position: ExplanationViewPosition, completion:(()->Void)) {
+        
+        //Basically we want the view to be rotated and translated, animated.
         
         let offsetToAddOrSubstract : CGFloat = (position == ExplanationViewPosition.RotatedLeft) ? -150 : 150
         
@@ -607,24 +628,35 @@ final public class ModalExplanationViewController: UIViewController {
             
             self.currentExplanationView.transform = position.viewTransform()
             
-            }) { (success) -> Void in
+            }) { (_) -> Void in
                 completion()
         }
     }
     
-    private func resetExplanationView(ExplanationView: UIView, position: ExplanationViewPosition) {
+    /**
+     Resets a given view to default values and adds default behaviors. Thereby it is placed below the screen and rotated to the given direction.
+     
+     - parameter explanationView: The view that shall be resetted
+     - parameter position:        Position to which the new view should be resettet to.
+     */
+    private func resetExplanationView(explanationView: UIView, position: ExplanationViewPosition) {
         animator.removeAllBehaviors()
         
         let center = CGPoint(x: CGRectGetWidth(view.bounds)/2, y: CGRectGetHeight(view.bounds)/2)
-        ExplanationView.center = position.viewCenter(center , offsetFromCenter: offsetForExplanationView)
-        ExplanationView.transform = position.viewTransform()
+        explanationView.center = position.viewCenter(center , offsetFromCenter: offsetForExplanationView)
+        explanationView.transform = position.viewTransform()
         
-        animator.updateItemUsingCurrentState(ExplanationView)
+        animator.updateItemUsingCurrentState(explanationView)
         
         animator.addBehavior(attachmentBehavior)
         animator.addBehavior(snapBehavior)
     }
 
+    /**
+     Call this method to finish the presentation. It will dismiss the ´ViewController` and call a provided completion handler with `finishedWithSuccess` set to `true` if the user has viewed all of the provided views or `false` if he skipped or cancelled.
+     
+     - parameter success: Flag that indicates whether the user has seen any provided view or skipped them. `true` if the user has viewed all of the provided views or `false` if he skipped or cancelled.
+     */
     private func dismissAndCallCompletionAccordinglyWithSuccess(success: Bool) {
         self.dismissViewControllerAnimated(true, completion: {
             
