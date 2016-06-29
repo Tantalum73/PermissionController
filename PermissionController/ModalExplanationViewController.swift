@@ -62,7 +62,7 @@ protocol PermissionAskingProtocol {
 }
 
 /// ModalExplanationViewController is responsible for presenting the PermissionView and handling user interactions like swiping or tapping on a button.
-final class ModalExplanationViewController: UIViewController {
+final public class ModalExplanationViewController: UIViewController {
     
     
         /// The permissionActionHandler is of type PermissionAskingProtocol and is needed to populate the view with the current permission statuses as well as acting on button-action methods.
@@ -163,19 +163,19 @@ final class ModalExplanationViewController: UIViewController {
     }
 
     
-    override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
         self.view.backgroundColor = UIColor(white: 0, alpha: 0.5)
     }
-    override func viewDidAppear(animated: Bool) {
+    override public func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         
     }
 
 
-    override func didReceiveMemoryWarning() {
+    override public func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
@@ -298,7 +298,7 @@ final class ModalExplanationViewController: UIViewController {
     
     //MARK: - Rotation Handlers
     
-    override func willTransitionToTraitCollection(newCollection: UITraitCollection, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+    override public func willTransitionToTraitCollection(newCollection: UITraitCollection, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
         super.willTransitionToTraitCollection(newCollection, withTransitionCoordinator: coordinator)
         
         coordinator.animateAlongsideTransition({ context in
@@ -523,7 +523,15 @@ final class ModalExplanationViewController: UIViewController {
         }
     }
 
-    func floatsHaveSameSign(num1 : CGFloat, num2 : CGFloat) ->Bool {
+    /**
+     This function checks if two floats have the same sign.
+     
+     - parameter num1: First number
+     - parameter num2: Second number
+     
+     - returns: `True` if both numbers have the same sign (-1 and -3), `false` if not (-1 and 3).
+     */
+    private func floatsHaveSameSign(num1 : CGFloat, num2 : CGFloat) ->Bool {
         return (num1 < 0 && num2 < 0) || (num1 > 0 && num2 > 0)
     }
     
