@@ -396,13 +396,19 @@ final class ModalExplanationViewController: UIViewController {
         return CGRectGetWidth(self.view.bounds) > CGRectGetHeight(self.view.bounds)
     }
     
+    /**
+     This method is responsible for adding autolayout constraints to the view that is passed into via `view`.
+     It adds constraint for positioning (pinned to center) as well as width and height (by using `constraintWidthForExplanationView(view)` and `constraintHeightForExplanationView(view)`.
+     
+     - parameter view: The view to which the constraint should be applied to. Not the view of the ViewController, tough.
+     */
     private func addConstraintsToNewView(view: UIView) {
         view.translatesAutoresizingMaskIntoConstraints = false
         centerXOfView = NSLayoutConstraint(item: view, attribute: .CenterX, relatedBy: .Equal, toItem: self.view, attribute: .CenterX, multiplier: 1, constant: 0)
         
         centerYOfView = NSLayoutConstraint(item: view, attribute: .CenterY, relatedBy: .Equal, toItem: self.view, attribute: .CenterY, multiplier: 1, constant: 0)
-        widthOfView = constraintWidthForExplanationView(view)
         
+        widthOfView = constraintWidthForExplanationView(view)
         heightOfView = constraintHeightForExplanationView(view)
         
         self.view.addConstraint(centerXOfView)
@@ -415,40 +421,72 @@ final class ModalExplanationViewController: UIViewController {
     
     
     //MARK: - GestureRecognizer Action Methods
+    /**
+     This method handles the pan gesture that the user performs on the currently presented view.
+     
+     - parameter pan: The UIPanGestureRecognizer that has fired.
+     */
     func panExplanationView(pan: UIPanGestureRecognizer) {
         let location = pan.locationInView(self.view)
         let velocity = pan.velocityInView(self.view).x
         
         switch pan.state {
         case .Began:
+            //Remove snap behavior and attach pan to reflect the users gesture on the view.
             animator.removeBehavior(snapBehavior)
             panBehavior = UIAttachmentBehavior(item: self.currentExplanationView, attachedToAnchor: location)
             animator.addBehavior(panBehavior)
             
+            
         case .Changed:
+            //Update the anchorPoint of the pan behavior to the current place of users finger.
             panBehavior.anchorPoint = location
         case .Ended:
             fallthrough
         case .Cancelled:
             let center = CGPoint(x: CGRectGetWidth(view.bounds)/2, y: CGRectGetHeight(view.bounds)/2)
-            let offset = location.x - center.x
+            let travelledDistance = location.x - center.x
             
-            if (fabs(offset) > 80 || abs(velocity) > 800) && floatsHaveSameSign(offset, num2: velocity) {
+            
+            /*
+             Dismiss the view if certain conditions are met:
+             - the view was moved more than 80pt in x direction
+             or
+             - the view was flicked away with a velocity greater than 800
+             and
+             - the user has moved the view in the direction he moves it right now (velocity in direction of pan gesture)
+            */
+            if (fabs(travelledDistance) > 80 || abs(velocity) > 800) && floatsHaveSameSign(travelledDistance, num2: velocity) {
+                
+                //index of the next view that will be loaded and presented
                 var nextIndex = self.index
+                
+                //position of the current view
                 var position = ExplanationViewPosition.RotatedRight
+                
+                ////position of the next view that will be loaded and presented
                 var nextPosition = ExplanationViewPosition.RotatedLeft
                 
-                if velocity > 0 && offset > 0 {
+                
+                if velocity > 0 && travelledDistance > 0 {
+                    //the user has swiped the view to the right side, the previous view needs to be loaded
                     nextIndex -= 1
+                    //next view starts rotated left
                     nextPosition = .RotatedLeft
+                    
+                    //current view is rotated right
                     position = .RotatedRight
                 }
                 else {
+                    //the user has swiped the view to the left side, the next view needs to be loaded
                     nextIndex += 1
+                    //next view starts rotated right
                     nextPosition = .RotatedRight
+                    //current view is rotated left
                     position = .RotatedLeft
                 }
                 
+                //limit lower bounds to make sure that index doesn't get < 0 and the first view is loaded if so.
                 if nextIndex < 0 {
                     nextIndex = 0
                     nextPosition = .RotatedRight
@@ -458,19 +496,16 @@ final class ModalExplanationViewController: UIViewController {
                 let center = CGPoint(x: CGRectGetWidth(view.bounds)/2, y: CGRectGetHeight(view.bounds)/2)
                 
                 panBehavior.anchorPoint = position.viewCenter(center, offsetFromCenter: self.offsetForExplanationView)
+                
+                //wait a little before the new view is presented
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (Int64)(duration * Double(NSEC_PER_SEC))), dispatch_get_main_queue(), {
                     
                     if nextIndex >= self.nameOfNibs.count {
+                        //finish the interaction if the last view was swiped away. Pass in `true` because the user finished by swiping through all views.
                         self.dismissAndCallCompletionAccordinglyWithSuccess(true)
-                        
-//                        self.dismissViewControllerAnimated(true, completion: {
-//                            
-//                            //TODO: send clubs to delegate
-//                            self.completion?(finishedWithSuccess: true)
-//                        })
-                        
                     }
                     else {
+                        //load and present the next view
                         self.index = nextIndex
                         self.addBehaiviorsAndViewForIndex(nextIndex, position: nextPosition)
                         
@@ -479,8 +514,7 @@ final class ModalExplanationViewController: UIViewController {
 
             }
             else {
-                
-                //snap back to center
+                //snap back to center as the user has not dismissed the view.
                 animator.removeBehavior(panBehavior)
                 animator.addBehavior(snapBehavior)
             }
