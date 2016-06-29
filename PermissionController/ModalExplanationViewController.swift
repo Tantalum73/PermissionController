@@ -441,8 +441,10 @@ final public class ModalExplanationViewController: UIViewController {
         case .Changed:
             //Update the anchorPoint of the pan behavior to the current place of users finger.
             panBehavior.anchorPoint = location
+            
         case .Ended:
             fallthrough
+            
         case .Cancelled:
             let center = CGPoint(x: CGRectGetWidth(view.bounds)/2, y: CGRectGetHeight(view.bounds)/2)
             let travelledDistance = location.x - center.x
@@ -535,7 +537,9 @@ final public class ModalExplanationViewController: UIViewController {
         return (num1 < 0 && num2 < 0) || (num1 > 0 && num2 > 0)
     }
     
+    
     //MARK: - Button Methods
+    
     /**
      The user pressed a skip button, all the views will be skipped and the completion handler will be called with unfinished flag.
      */
@@ -600,14 +604,12 @@ final public class ModalExplanationViewController: UIViewController {
      */
     func permissionButtonCalendarPressed() {
         permissionActionHandler?.permissionButtonCalendarPressed()
-        
     }
     /**
      Function that wraps a call to the `permissionActionHandler`. It is called when the notification permission button is pressed and asks the `permissionActionHandler` to handle the action.
      */
     func permissionButtonNotificationPressed() {
         permissionActionHandler?.permissionButtonNotificationPressed()
-        
     }
     
     /**
