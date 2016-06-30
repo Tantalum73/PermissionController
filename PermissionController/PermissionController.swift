@@ -10,17 +10,11 @@ import UIKit
 import MapKit
 import EventKit
 
-//protocol PermissionExplanationProtocol {
-//    func explanationDidFinishWithPermissionGranted(permissionGranted : Bool)
-//    func showPermissionFailedAlert()
-//    
-//}
 
-enum PermissionInterestedIn {
+public enum PermissionInterestedIn {
     case Location, Calendar, Notification
 }
-class PermissionController: NSObject, CLLocationManagerDelegate {
-//    var delegate : PermissionExplanationProtocol?
+public class PermissionController: NSObject, CLLocationManagerDelegate {
     private var locationManager : CLLocationManager?
     private var eventStore : EKEventStore?
     private var currentViewControllerView: UIView?
@@ -30,21 +24,16 @@ class PermissionController: NSObject, CLLocationManagerDelegate {
     
     private var successBlock : (()->())?
     private var failureBlock: (()->())?
-    /**
-    Checks if the user agreed to let the app use the location.
-    Requests the permission if it is not already granted.
-    - returns: true if user agreed false if not
-    
-    */
+
 
 /**
 Use this method to present the permission view.
-The user will be asked to give the permission by a dialog.
+The user will be asked to give permissions by a dialog.
 
-When the user already granted his permission, the button is not enabled (early version, later: checkmark indication).
+When the user already granted a permission, the button is not enabled and a checkmark reflects it.
 
 - returns: Bool that is true, when requested permission is already granted.
-If other permissions are missing, the PermissionView will be displayed.
+If other permissions are missing, the PermissionView will be displayed and false is returned.
     
 - parameter viewController: The UIViewController on which the PermissionView shall be presented.
     
@@ -55,8 +44,7 @@ If other permissions are missing, the PermissionView will be displayed.
 - parameter failureBlock: This block will be executed on the main thread if the user dismissed the PermissionView and did not gave the desired permission.
 */
     
-
-    func presentPermissionViewIfNeededInViewController(viewController: UIViewController, interestedInPermission: PermissionInterestedIn?, successBlock: (()->())?, failureBlock: (()->())? ) -> Bool {
+    public func presentPermissionViewIfNeededInViewController(viewController: UIViewController, interestedInPermission: PermissionInterestedIn?, successBlock: (()->())?, failureBlock: (()->())? ) -> Bool {
         
         let status = stateOfPermissions()
         
@@ -111,7 +99,8 @@ If other permissions are missing, the PermissionView will be displayed.
                     })
                 }
             })
-            return true
+            //return something so that the calling code an continue.
+            return false
         }
                 
         successBlock?()
@@ -120,7 +109,7 @@ If other permissions are missing, the PermissionView will be displayed.
     
     
     //MARK: - CLLocationManagerDelegate
-    func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
+    public func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
         
         NSNotificationCenter.defaultCenter().postNotificationName("LocalizationAuthorizationStatusChanged", object: manager)
         NSNotificationCenter.defaultCenter().postNotificationName("AuthorizationStatusChanged", object: nil)
