@@ -31,13 +31,15 @@ Use this method to present the permission view.
 The user will be asked to give permissions by a dialog.
 
 When the user already granted a permission, the button is not enabled and a checkmark reflects it.
+     
+By specifying a `interestedInPermission` you register the completion and failure blocks to be executed when the user finfished the interaction with the dialog. If the operation you want to start depends on a permission, you can continue or cancel it in those blocks if you registered in that permission.
 
 - returns: Bool that is true, when requested permission is already granted.
 If other permissions are missing, the PermissionView will be displayed and false is returned.
     
 - parameter viewController: The UIViewController on which the PermissionView shall be presented.
     
-- parameter interestedInPermission: Indicates in which action the reuest is interested in. This value decides, whether the permission requesting was successful or not and therefore which completion block will be called.
+- parameter interestedInPermission: Indicates in which action the reuest is interested in. This value decides, whether the permission requesting was successful or not and therefore which completion block will be called. If you are only interested in the location permission to continue an operation, you can rely on the successBlock/failureBlock to be executed after the user was asked and continue or cancel the operation.
     
 - parameter successBlock: This block will be executed on the main thread if the user dismissed the PermissionView and gave the desired permission.
     
@@ -109,10 +111,11 @@ If other permissions are missing, the PermissionView will be displayed and false
     
     
     //MARK: - CLLocationManagerDelegate
+    
+    /**
+     Receives CLLocationManagerDelegate authorization calls and writes them to the `NSUserDefaults`. Then, a notification is posted that tells the displayed dialog to update the UI accordingly.
+     */
     public func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
-        
-        NSNotificationCenter.defaultCenter().postNotificationName("LocalizationAuthorizationStatusChanged", object: manager)
-        NSNotificationCenter.defaultCenter().postNotificationName("AuthorizationStatusChanged", object: nil)
         
         let defaults = NSUserDefaults.standardUserDefaults()
         switch status {
@@ -139,9 +142,15 @@ If other permissions are missing, the PermissionView will be displayed and false
         }
         
         defaults.synchronize()
+        
+        
+        NSNotificationCenter.defaultCenter().postNotificationName("LocalizationAuthorizationStatusChanged", object: manager)
+        NSNotificationCenter.defaultCenter().postNotificationName("AuthorizationStatusChanged", object: nil)
     }
 
-    
+    /**
+     Open the Settings.app on the users device because he already declined the permission and it needs to be changed from there.
+     */
     private func sendUserToSettings() {
         let url = NSURL(string: UIApplicationOpenSettingsURLString)!
         
