@@ -66,6 +66,7 @@ class PermissionView: UIView {
         tintButtonsBasedOnLatestPermissionStatus()
     }
     
+    //Important to implement tis for UIDynamics to work
     override func alignmentRectForFrame(frame: CGRect) -> CGRect {
         return self.bounds
     }
@@ -78,6 +79,8 @@ class PermissionView: UIView {
         
         setUpButtons()
     }
+    
+    //Styles the buttons
     private func setUpButtons() {
         let contentEdgeInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
         
@@ -107,11 +110,19 @@ class PermissionView: UIView {
 
     }
     
+    /**
+     Call this method if the permission status has changed. It will update the appearence of the UI.
+     
+     - parameter state: New state that describes the current status of permissions.
+     */
     func updateStateOfButtons(state: StatusOfPermissions) {
         latestPermissionConfiguration = state
         tintButtonsBasedOnLatestPermissionStatus()
     }
     
+    /**
+     This method applies the tint color to the buttons. Either that is `colorForCheckedButtons` or the actual `tintColor` of the view.
+     */
     private func tintButtonsBasedOnLatestPermissionStatus() {
         if let state = latestPermissionConfiguration {
             locationCheckmark.hidden = !state.permissionLocationGranted
@@ -141,10 +152,13 @@ class PermissionView: UIView {
     }
     
     
-    
+    /**
+     Applies a given color to a button. It will set properties like the text, tint and border color in both states (highlighted and normal). Additionally, the image is tinted using `imageWithRenderingMode(.AlwaysTemplate)`.
+     
+     - parameter color:  The color in which the button should be colored in.
+     - parameter button: The button that is to be styled.
+     */
     private func tintButtonIntoColor(color: UIColor, button: UIButton) {
-//        let newColor = (checked) ? UIColor.colorFromHex(0x1CAD04, alpha: 1) : HelperClass.tintColor
-        
         button.setTitleColor(color, forState: .Normal)
         button.setTitleColor(color.colorWithAlphaComponent(0.6), forState: UIControlState.Highlighted)
         button.layer.borderColor = color.CGColor

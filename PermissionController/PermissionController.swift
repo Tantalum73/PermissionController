@@ -10,10 +10,18 @@ import UIKit
 import MapKit
 import EventKit
 
-
+/**
+Enum to express types of permission in that you are interested in.
+ 
+ - Location:     Location permission
+ - Calendar:     Calendar permission
+ - Notification: Notification permission
+ */
 public enum PermissionInterestedIn {
     case Location, Calendar, Notification
 }
+
+/// Exposes the interface for persenting the permission dialog and handles the actions.
 public class PermissionController: NSObject, CLLocationManagerDelegate {
     private var locationManager : CLLocationManager?
     private var eventStore : EKEventStore?
