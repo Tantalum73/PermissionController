@@ -71,6 +71,7 @@ class PermissionView: UIView {
         return self.bounds
     }
     
+    /// Styles the view.
     private func setUpView() {
         //some view adjustment code, like corner radius
         layer.cornerRadius = 10
@@ -80,7 +81,7 @@ class PermissionView: UIView {
         setUpButtons()
     }
     
-    //Styles the buttons
+    /// Styles the buttons.
     private func setUpButtons() {
         let contentEdgeInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
         
@@ -169,7 +170,13 @@ class PermissionView: UIView {
         
     }
     
-    
+    /**
+     Calculates the insets that should be pplied to the buttons. Is is derived from views and buttons size.
+     
+     - parameter button: The button to shich the insets should applied to by the caller.
+     
+     - returns: Insets for the caller to apply to the button. It will position the image correctly.
+     */
     private func imageInsetsForButton(button: UIButton) -> UIEdgeInsets {
         let offsetForLocationButtonImage = button.frame.width - button.titleLabel!.frame.width - (button.imageView!.frame.width + button.contentEdgeInsets.left)
         
