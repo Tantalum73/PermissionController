@@ -8,6 +8,7 @@
 
 import UIKit
 
+/// This view will be presented by the PermissionController. 
 class PermissionView: UIView {
     @IBOutlet weak var doneButton: UIButton!
     @IBOutlet weak var progressView: UIProgressView!

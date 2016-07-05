@@ -22,6 +22,9 @@ class ViewController: UIViewController {
     }
 
     @IBAction func showPermissionButtonPressed(sender: AnyObject) {
+        
+        //Grab the initialized PermissionController object and call the method to start the presentation.
+        //In this case I am interested in the location permission. In this case, when the user dismisses the dialog the successBlock is called if the user has given the permission. Otherwise, the failBlock will be executed.
         permissionController.presentPermissionViewIfNeededInViewController(self, interestedInPermission: .Location, successBlock: { () -> () in
             
             print("Location Access Granted. You could locate your user now.")
