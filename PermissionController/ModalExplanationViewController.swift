@@ -76,7 +76,7 @@ final public class ModalExplanationViewController: UIViewController {
     
         /// Offset by which the presented view will be translated down before animating in.
     private lazy var offsetForExplanationView : CGFloat = {
-        let heightOfScreen = UIScreen.mainScreen().bounds.size.height
+        let heightOfScreen = UIScreen.main().bounds.size.height
         
         return heightOfScreen
     }()
@@ -113,11 +113,11 @@ final public class ModalExplanationViewController: UIViewController {
      */
     enum ExplanationViewPosition: Int {
         /// Default position.
-        case Default
+        case `default`
         /// The view is rotated left: by M_PI_2 clockwise.
-        case RotatedLeft
+        case rotatedLeft
         /// The view is rotated right: by M_PI_2 counter clockwise.
-        case RotatedRight
+        case rotatedRight
         
         /**
          Calculates the center of the view based on its current state (rotation).
@@ -127,14 +127,14 @@ final public class ModalExplanationViewController: UIViewController {
          
          - returns: The center of the view based on its current state (rotation).
          */
-        func viewCenter(center: CGPoint, offsetFromCenter : CGFloat)->CGPoint {
+        func viewCenter(_ center: CGPoint, offsetFromCenter : CGFloat)->CGPoint {
             var center = center
             
             switch self {
-            case .RotatedLeft:
+            case .rotatedLeft:
                 center.y += offsetFromCenter
                 center.x -= offsetFromCenter
-            case .RotatedRight:
+            case .rotatedRight:
                 center.y += offsetFromCenter
                 center.x += offsetFromCenter
                 
@@ -152,12 +152,12 @@ final public class ModalExplanationViewController: UIViewController {
          */
         func viewTransform() -> CGAffineTransform {
             switch self {
-            case .RotatedRight:
-                return CGAffineTransformMakeRotation(CGFloat(M_PI_2))
-            case .RotatedLeft:
-                return CGAffineTransformMakeRotation(CGFloat(-M_PI_2))
+            case .rotatedRight:
+                return CGAffineTransform(rotationAngle: CGFloat(M_PI_2))
+            case .rotatedLeft:
+                return CGAffineTransform(rotationAngle: CGFloat(-M_PI_2))
             default:
-                return CGAffineTransformIdentity
+                return CGAffineTransform.identity
             }
         }
     }
@@ -169,7 +169,7 @@ final public class ModalExplanationViewController: UIViewController {
         // Do any additional setup after loading the view.
         self.view.backgroundColor = UIColor(white: 0, alpha: 0.5)
     }
-    override public func viewDidAppear(animated: Bool) {
+    override public func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
     }
@@ -187,15 +187,15 @@ final public class ModalExplanationViewController: UIViewController {
      - parameter nameOfNibs:     Name of the nibs that will be presented and animated.
      - parameter completion:     A completion block that will be executed when the interaction has finished: the user has swiped through the views (from right to left, every view was presented, `finishedWithSuccess=true` or dismissed the first one (first view came from right and was pushed rightwards, too, `finishedWithSuccess=false`).
      */
-    public func presentExplanationViewControllerOnViewController(viewController : UIViewController, nameOfNibs: [String], completion:((finishedWithSuccess : Bool)->())?) {
+    public func presentExplanationViewControllerOnViewController(_ viewController : UIViewController, nameOfNibs: [String], completion:((finishedWithSuccess : Bool)->())?) {
         self.nameOfNibs = nameOfNibs
         
         self.completion = completion
         
-        self.modalPresentationStyle = .OverFullScreen
-        self.modalTransitionStyle = .CrossDissolve
+        self.modalPresentationStyle = .overFullScreen
+        self.modalTransitionStyle = .crossDissolve
         
-        viewController.presentViewController(self, animated: true) { () -> Void in
+        viewController.present(self, animated: true) { () -> Void in
             self.setupAnimator()
         }
     }
@@ -208,7 +208,7 @@ final public class ModalExplanationViewController: UIViewController {
     private func setupAnimator() {
         animator = UIDynamicAnimator(referenceView: self.view)
         
-        self.addBehaiviorsAndViewForIndex(0, position: .RotatedRight)
+        self.addBehaiviorsAndViewForIndex(0, position: .rotatedRight)
         
         let pan = UIPanGestureRecognizer(target: self, action: #selector(ModalExplanationViewController.panExplanationView(_:)))
         self.view.addGestureRecognizer(pan)
@@ -220,7 +220,7 @@ final public class ModalExplanationViewController: UIViewController {
      - parameter nextIndex: Index of the next view that should be loaded from a nib. The name is stored in the global `nameOfNibs` array.
      - parameter position:  Position in which the new view should be started from (`.RotatedRight` in most cases)
      */
-    private func addBehaiviorsAndViewForIndex(nextIndex:Int, position: ExplanationViewPosition) {
+    private func addBehaiviorsAndViewForIndex(_ nextIndex:Int, position: ExplanationViewPosition) {
         
         
         if(nextIndex >= self.nameOfNibs.count) {
@@ -236,14 +236,14 @@ final public class ModalExplanationViewController: UIViewController {
         
         self.view.addSubview(newView)
         
-        let center = CGPoint(x: CGRectGetWidth(view.bounds)/2, y: CGRectGetHeight(view.bounds)/2)
+        let center = CGPoint(x: view.bounds.width/2, y: view.bounds.height/2)
         snapBehavior = self.snapBehaviorForCenter(center, item: newView)
         
         attachmentBehavior = attachmentBehaviorForCenter(center, item: newView)
         resetExplanationView(self.currentExplanationView, position: position)
         
         addConstraintsToNewView(newView)
-        newView.transform = CGAffineTransformConcat(newView.transform, CGAffineTransformMakeTranslation(0, -offsetForExplanationView))
+        newView.transform = newView.transform.concat(CGAffineTransform(translationX: 0, y: -offsetForExplanationView))
     }
 
     /**
@@ -255,9 +255,9 @@ final public class ModalExplanationViewController: UIViewController {
      
      - returns: A styled and configured UIView if the nib name was valid, nil if not.
      */
-    private func createExplanationViewForIndex(index: Int) -> UIView? {
+    private func createExplanationViewForIndex(_ index: Int) -> UIView? {
         
-        let generalView: UIView = UINib(nibName: String(self.nameOfNibs[index]), bundle: nil).instantiateWithOwner(nil, options: nil).first as! UIView
+        let generalView: UIView = UINib(nibName: String(self.nameOfNibs[index]), bundle: nil).instantiate(withOwner: nil, options: nil).first as! UIView
         
 //        generalView.frame = CGRect(x: 0, y: 0, width: kExplanationViewWidth, height: kExplanationViewHeight)
         
@@ -267,13 +267,13 @@ final public class ModalExplanationViewController: UIViewController {
        
         if let correctView = generalView as? PermissionView {
 
-            NSNotificationCenter.defaultCenter().addObserver(self, selector:#selector(ModalExplanationViewController.updateButtonAppearenceBasedOnCurrentSetOfPermissions) , name: "AuthorizationStatusChanged", object: nil)
+            NotificationCenter.default.addObserver(self, selector:#selector(ModalExplanationViewController.updateButtonAppearenceBasedOnCurrentSetOfPermissions) , name: "AuthorizationStatusChanged" as NSNotification.Name, object: nil)
             
             correctView.progressView.progress = 1.0
-            correctView.locationButton.addTarget(self, action: #selector(ModalExplanationViewController.permissionButtonLocationPressed), forControlEvents: .TouchUpInside)
-            correctView.calendarButton.addTarget(self, action: #selector(ModalExplanationViewController.permissionButtonCalendarPressed), forControlEvents: .TouchUpInside)
-            correctView.notificationButton.addTarget(self, action: #selector(ModalExplanationViewController.permissionButtonNotificationPressed), forControlEvents: .TouchUpInside)
-            correctView.doneButton.addTarget(self, action: #selector(ModalExplanationViewController.doneButtonPressed), forControlEvents: .TouchUpInside)
+            correctView.locationButton.addTarget(self, action: #selector(ModalExplanationViewController.permissionButtonLocationPressed), for: .touchUpInside)
+            correctView.calendarButton.addTarget(self, action: #selector(ModalExplanationViewController.permissionButtonCalendarPressed), for: .touchUpInside)
+            correctView.notificationButton.addTarget(self, action: #selector(ModalExplanationViewController.permissionButtonNotificationPressed), for: .touchUpInside)
+            correctView.doneButton.addTarget(self, action: #selector(ModalExplanationViewController.doneButtonPressed), for: .touchUpInside)
             updateButtonAppearenceBasedOnCurrentSetOfPermissions()
         }
         
@@ -298,10 +298,10 @@ final public class ModalExplanationViewController: UIViewController {
     
     //MARK: - Rotation Handlers
     
-    override public func willTransitionToTraitCollection(newCollection: UITraitCollection, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-        super.willTransitionToTraitCollection(newCollection, withTransitionCoordinator: coordinator)
+    override public func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.willTransition(to: newCollection, with: coordinator)
         
-        coordinator.animateAlongsideTransition({ context in
+        coordinator.animate(alongsideTransition: { context in
             /*
              Basically we need to update the view to match the new orientation.
              Therefore we remove behaviors, update and add them again.
@@ -312,17 +312,17 @@ final public class ModalExplanationViewController: UIViewController {
             self.animator.removeBehavior(self.snapBehavior)
             self.animator.removeBehavior(self.attachmentBehavior)
             
-            let center = CGPoint(x: CGRectGetWidth(self.view.bounds)/2, y: CGRectGetHeight(self.view.bounds)/2)
-            self.snapBehavior = self.snapBehaviorForCenter(center, item: snappedView)
-            self.attachmentBehavior = self.attachmentBehaviorForCenter(center, item: snappedView)
+            let center = CGPoint(x: self.view.bounds.width/2, y: self.view.bounds.height/2)
+            self.snapBehavior = self.snapBehaviorForCenter(center, item: snappedView!)
+            self.attachmentBehavior = self.attachmentBehaviorForCenter(center, item: snappedView!)
             
-            self.resetExplanationView(snappedView, position: .Default)
+            self.resetExplanationView(snappedView!, position: .default)
             
             self.view.removeConstraint(self.widthOfView)
             self.view.removeConstraint(self.heightOfView)
             
-            self.widthOfView = self.constraintWidthForExplanationView(snappedView)
-            self.heightOfView = self.constraintHeightForExplanationView(snappedView)
+            self.widthOfView = self.constraintWidthForExplanationView(snappedView!)
+            self.heightOfView = self.constraintHeightForExplanationView(snappedView!)
             
             self.view.addConstraint(self.widthOfView)
             self.view.addConstraint(self.heightOfView)
@@ -342,8 +342,8 @@ final public class ModalExplanationViewController: UIViewController {
      
      - returns: A UISnapBehavior attached to the specified view snapping it to the specified center.
      */
-    private func snapBehaviorForCenter(center: CGPoint, item: UIView) -> UISnapBehavior {
-        return UISnapBehavior(item: item, snapToPoint: center)
+    private func snapBehaviorForCenter(_ center: CGPoint, item: UIView) -> UISnapBehavior {
+        return UISnapBehavior(item: item, snapTo: center)
     }
     
     /**
@@ -354,7 +354,7 @@ final public class ModalExplanationViewController: UIViewController {
      
      - returns: A UIAttachmentBehavior that attaches the `item` to a point below the screen (specified by `center` and moved downwards by `offsetForExplanationView`.
      */
-    private func attachmentBehaviorForCenter(center: CGPoint, item: UIView) -> UIAttachmentBehavior {
+    private func attachmentBehaviorForCenter(_ center: CGPoint, item: UIView) -> UIAttachmentBehavior {
         var newCenter = center
         newCenter.y += offsetForExplanationView
         
@@ -368,10 +368,10 @@ final public class ModalExplanationViewController: UIViewController {
      
      - returns: NSLayoutConstraint that specifies width of view.
      */
-    private func constraintWidthForExplanationView(view: UIView) -> NSLayoutConstraint {
+    private func constraintWidthForExplanationView(_ view: UIView) -> NSLayoutConstraint {
         let multiplier : CGFloat = isWiderThanHeigh() ? CGFloat(kExplainationViewWidthPercentageLandscape) : CGFloat(kExplainationViewWidthPercentagePortrait)
         
-        return NSLayoutConstraint(item: view, attribute: .Width, relatedBy: .Equal, toItem: self.view, attribute: .Width, multiplier: multiplier, constant: 0)
+        return NSLayoutConstraint(item: view, attribute: .width, relatedBy: .equal, toItem: self.view, attribute: .width, multiplier: multiplier, constant: 0)
     }
     
     /**
@@ -381,10 +381,10 @@ final public class ModalExplanationViewController: UIViewController {
      
      - returns: NSLayoutConstraint that specifies height of view.
      */
-    private func constraintHeightForExplanationView(view: UIView) -> NSLayoutConstraint {
+    private func constraintHeightForExplanationView(_ view: UIView) -> NSLayoutConstraint {
         let multiplier : CGFloat = isWiderThanHeigh() ? CGFloat(kExplainationViewHeightPercentageLandscape) : CGFloat(kExplainationViewHeightPercentagePortrait)
         
-        return NSLayoutConstraint(item: view, attribute: .Height, relatedBy: .Equal, toItem: self.view, attribute: .Height, multiplier: multiplier, constant: 0)
+        return NSLayoutConstraint(item: view, attribute: .height, relatedBy: .equal, toItem: self.view, attribute: .height, multiplier: multiplier, constant: 0)
     }
     
     /**
@@ -393,7 +393,7 @@ final public class ModalExplanationViewController: UIViewController {
      - returns: True if the view is wider than height.
      */
     private func isWiderThanHeigh() -> Bool {
-        return CGRectGetWidth(self.view.bounds) > CGRectGetHeight(self.view.bounds)
+        return self.view.bounds.width > self.view.bounds.height
     }
     
     /**
@@ -402,11 +402,11 @@ final public class ModalExplanationViewController: UIViewController {
      
      - parameter view: The view to which the constraint should be applied to. Not the view of the ViewController, tough.
      */
-    private func addConstraintsToNewView(view: UIView) {
+    private func addConstraintsToNewView(_ view: UIView) {
         view.translatesAutoresizingMaskIntoConstraints = false
-        centerXOfView = NSLayoutConstraint(item: view, attribute: .CenterX, relatedBy: .Equal, toItem: self.view, attribute: .CenterX, multiplier: 1, constant: 0)
+        centerXOfView = NSLayoutConstraint(item: view, attribute: .centerX, relatedBy: .equal, toItem: self.view, attribute: .centerX, multiplier: 1, constant: 0)
         
-        centerYOfView = NSLayoutConstraint(item: view, attribute: .CenterY, relatedBy: .Equal, toItem: self.view, attribute: .CenterY, multiplier: 1, constant: 0)
+        centerYOfView = NSLayoutConstraint(item: view, attribute: .centerY, relatedBy: .equal, toItem: self.view, attribute: .centerY, multiplier: 1, constant: 0)
         
         widthOfView = constraintWidthForExplanationView(view)
         heightOfView = constraintHeightForExplanationView(view)
@@ -426,27 +426,27 @@ final public class ModalExplanationViewController: UIViewController {
      
      - parameter pan: The UIPanGestureRecognizer that has fired.
      */
-    func panExplanationView(pan: UIPanGestureRecognizer) {
-        let location = pan.locationInView(self.view)
-        let velocity = pan.velocityInView(self.view).x
+    func panExplanationView(_ pan: UIPanGestureRecognizer) {
+        let location = pan.location(in: self.view)
+        let velocity = pan.velocity(in: self.view).x
         
         switch pan.state {
-        case .Began:
+        case .began:
             //Remove snap behavior and attach pan to reflect the users gesture on the view.
             animator.removeBehavior(snapBehavior)
             panBehavior = UIAttachmentBehavior(item: self.currentExplanationView, attachedToAnchor: location)
             animator.addBehavior(panBehavior)
             
             
-        case .Changed:
+        case .changed:
             //Update the anchorPoint of the pan behavior to the current place of users finger.
             panBehavior.anchorPoint = location
             
-        case .Ended:
+        case .ended:
             fallthrough
             
-        case .Cancelled:
-            let center = CGPoint(x: CGRectGetWidth(view.bounds)/2, y: CGRectGetHeight(view.bounds)/2)
+        case .cancelled:
+            let center = CGPoint(x: view.bounds.width/2, y: view.bounds.height/2)
             let travelledDistance = location.x - center.x
             
             
@@ -464,43 +464,43 @@ final public class ModalExplanationViewController: UIViewController {
                 var nextIndex = self.index
                 
                 //position of the current view
-                var position = ExplanationViewPosition.RotatedRight
+                var position = ExplanationViewPosition.rotatedRight
                 
                 ////position of the next view that will be loaded and presented
-                var nextPosition = ExplanationViewPosition.RotatedLeft
+                var nextPosition = ExplanationViewPosition.rotatedLeft
                 
                 
                 if velocity > 0 && travelledDistance > 0 {
                     //the user has swiped the view to the right side, the previous view needs to be loaded
                     nextIndex -= 1
                     //next view starts rotated left
-                    nextPosition = .RotatedLeft
+                    nextPosition = .rotatedLeft
                     
                     //current view is rotated right
-                    position = .RotatedRight
+                    position = .rotatedRight
                 }
                 else {
                     //the user has swiped the view to the left side, the next view needs to be loaded
                     nextIndex += 1
                     //next view starts rotated right
-                    nextPosition = .RotatedRight
+                    nextPosition = .rotatedRight
                     //current view is rotated left
-                    position = .RotatedLeft
+                    position = .rotatedLeft
                 }
                 
                 //limit lower bounds to make sure that index doesn't get < 0 and the first view is loaded if so.
                 if nextIndex < 0 {
                     nextIndex = 0
-                    nextPosition = .RotatedRight
+                    nextPosition = .rotatedRight
                 }
                 
                 let duration = 0.5
-                let center = CGPoint(x: CGRectGetWidth(view.bounds)/2, y: CGRectGetHeight(view.bounds)/2)
+                let center = CGPoint(x: view.bounds.width/2, y: view.bounds.height/2)
                 
                 panBehavior.anchorPoint = position.viewCenter(center, offsetFromCenter: self.offsetForExplanationView)
                 
                 //wait a little before the new view is presented
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (Int64)(duration * Double(NSEC_PER_SEC))), dispatch_get_main_queue(), {
+                DispatchQueue.main.after(when: DispatchTime.now() + Double((Int64)(duration * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC), execute: {
                     
                     if nextIndex >= self.nameOfNibs.count {
                         //finish the interaction if the last view was swiped away. Pass in `true` because the user finished by swiping through all views.
@@ -533,7 +533,7 @@ final public class ModalExplanationViewController: UIViewController {
      
      - returns: `True` if both numbers have the same sign (-1 and -3), `false` if not (-1 and 3).
      */
-    private func floatsHaveSameSign(num1 : CGFloat, num2 : CGFloat) ->Bool {
+    private func floatsHaveSameSign(_ num1 : CGFloat, num2 : CGFloat) ->Bool {
         return (num1 < 0 && num2 < 0) || (num1 > 0 && num2 > 0)
     }
     
@@ -545,7 +545,7 @@ final public class ModalExplanationViewController: UIViewController {
      */
     func skipButtonPressed() {
         self.animator.removeAllBehaviors()
-        self.animateTheCurrentViewToPosition(ExplanationViewPosition.RotatedLeft, completion: { () -> Void in
+        self.animateTheCurrentViewToPosition(ExplanationViewPosition.rotatedLeft, completion: { () -> Void in
             self.dismissAndCallCompletionAccordinglyWithSuccess(false)
         })
     }
@@ -554,7 +554,7 @@ final public class ModalExplanationViewController: UIViewController {
      */
     func doneButtonPressed() {
         self.animator.removeAllBehaviors()
-        self.animateTheCurrentViewToPosition(ExplanationViewPosition.RotatedLeft, completion: { () -> Void in
+        self.animateTheCurrentViewToPosition(ExplanationViewPosition.rotatedLeft, completion: { () -> Void in
             self.dismissAndCallCompletionAccordinglyWithSuccess(true)
         })
     }
@@ -563,7 +563,7 @@ final public class ModalExplanationViewController: UIViewController {
      */
     func declineButtonPressed() {
         self.animator.removeAllBehaviors()
-        self.animateTheCurrentViewToPosition(ExplanationViewPosition.RotatedRight, completion: { () -> Void in
+        self.animateTheCurrentViewToPosition(ExplanationViewPosition.rotatedRight, completion: { () -> Void in
             self.dismissAndCallCompletionAccordinglyWithSuccess(false)
         })
     }
@@ -574,9 +574,9 @@ final public class ModalExplanationViewController: UIViewController {
     func backButtonPressed() {
         self.animator.removeAllBehaviors()
         
-        self.animateTheCurrentViewToPosition(ExplanationViewPosition.RotatedRight, completion: { () -> Void in
+        self.animateTheCurrentViewToPosition(ExplanationViewPosition.rotatedRight, completion: { () -> Void in
             self.index -= 1
-            self.addBehaiviorsAndViewForIndex(self.index, position: ExplanationViewPosition.RotatedLeft)
+            self.addBehaiviorsAndViewForIndex(self.index, position: ExplanationViewPosition.rotatedLeft)
         })
         
     }
@@ -587,9 +587,9 @@ final public class ModalExplanationViewController: UIViewController {
     func continueButtonPressed() {
         self.animator.removeAllBehaviors()
         
-        self.animateTheCurrentViewToPosition(ExplanationViewPosition.RotatedLeft, completion: { () -> Void in
+        self.animateTheCurrentViewToPosition(ExplanationViewPosition.rotatedLeft, completion: { () -> Void in
             self.index += 1
-            self.addBehaiviorsAndViewForIndex(self.index, position: ExplanationViewPosition.RotatedRight)
+            self.addBehaiviorsAndViewForIndex(self.index, position: ExplanationViewPosition.rotatedRight)
         })
     }
     
@@ -618,15 +618,15 @@ final public class ModalExplanationViewController: UIViewController {
      - parameter position:   The position in which the current view should be animated to.
      - parameter completion: Completion handler that is called after the animation finished.
      */
-    private func animateTheCurrentViewToPosition(position: ExplanationViewPosition, completion:(()->Void)) {
+    private func animateTheCurrentViewToPosition(_ position: ExplanationViewPosition, completion:(()->Void)) {
         
         //Basically we want the view to be rotated and translated, animated.
         
-        let offsetToAddOrSubstract : CGFloat = (position == ExplanationViewPosition.RotatedLeft) ? -150 : 150
+        let offsetToAddOrSubstract : CGFloat = (position == ExplanationViewPosition.rotatedLeft) ? -150 : 150
         
-        UIView.animateWithDuration(0.7, delay: 0, usingSpringWithDamping: 1.5, initialSpringVelocity: 0, options: UIViewAnimationOptions.BeginFromCurrentState, animations: { () -> Void in
+        UIView.animate(withDuration: 0.7, delay: 0, usingSpringWithDamping: 1.5, initialSpringVelocity: 0, options: UIViewAnimationOptions.beginFromCurrentState, animations: { () -> Void in
             
-            self.currentExplanationView.center = position.viewCenter(CGPoint(x: (CGRectGetWidth(self.view.bounds) / 2) + offsetToAddOrSubstract, y: CGRectGetHeight(self.view.bounds)/2), offsetFromCenter: self.offsetForExplanationView)
+            self.currentExplanationView.center = position.viewCenter(CGPoint(x: (self.view.bounds.width / 2) + offsetToAddOrSubstract, y: self.view.bounds.height/2), offsetFromCenter: self.offsetForExplanationView)
             
             self.currentExplanationView.transform = position.viewTransform()
             
@@ -641,14 +641,14 @@ final public class ModalExplanationViewController: UIViewController {
      - parameter explanationView: The view that shall be reset
      - parameter position:        Position to which the new view should be reset to.
      */
-    private func resetExplanationView(explanationView: UIView, position: ExplanationViewPosition) {
+    private func resetExplanationView(_ explanationView: UIView, position: ExplanationViewPosition) {
         animator.removeAllBehaviors()
         
-        let center = CGPoint(x: CGRectGetWidth(view.bounds)/2, y: CGRectGetHeight(view.bounds)/2)
+        let center = CGPoint(x: view.bounds.width/2, y: view.bounds.height/2)
         explanationView.center = position.viewCenter(center , offsetFromCenter: offsetForExplanationView)
         explanationView.transform = position.viewTransform()
         
-        animator.updateItemUsingCurrentState(explanationView)
+        animator.updateItem(usingCurrentState: explanationView)
         
         animator.addBehavior(attachmentBehavior)
         animator.addBehavior(snapBehavior)
@@ -659,8 +659,8 @@ final public class ModalExplanationViewController: UIViewController {
      
      - parameter success: Flag that indicates whether the user has seen any provided view or skipped them. `true` if the user has viewed all of the provided views or `false` if he skipped or cancelled.
      */
-    private func dismissAndCallCompletionAccordinglyWithSuccess(success: Bool) {
-        self.dismissViewControllerAnimated(true, completion: {
+    private func dismissAndCallCompletionAccordinglyWithSuccess(_ success: Bool) {
+        self.dismiss(animated: true, completion: {
             
             self.completion?(finishedWithSuccess: success)
         })

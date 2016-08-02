@@ -68,7 +68,7 @@ class PermissionView: UIView {
     }
     
     //Important to implement tis for UIDynamics to work
-    override func alignmentRectForFrame(frame: CGRect) -> CGRect {
+    override func alignmentRect(forFrame frame: CGRect) -> CGRect {
         return self.bounds
     }
     
@@ -89,24 +89,24 @@ class PermissionView: UIView {
         
         locationButton.layer.borderWidth = 1
         locationButton.layer.cornerRadius = 5
-        locationButton.layer.borderColor = tintColor.CGColor
+        locationButton.layer.borderColor = tintColor.cgColor
         locationButton.contentEdgeInsets = contentEdgeInsets
-        locationButton.setTitleColor(tintColor, forState: .Normal)
-        locationButton.setTitleColor(tintColor.colorWithAlphaComponent(0.6), forState: UIControlState.Highlighted)
+        locationButton.setTitleColor(tintColor, for: UIControlState())
+        locationButton.setTitleColor(tintColor.withAlphaComponent(0.6), for: UIControlState.highlighted)
         locationButton.clipsToBounds = true
 
         calendarButton.layer.borderWidth = 1
         calendarButton.layer.cornerRadius = 5
-        calendarButton.layer.borderColor = tintColor.CGColor
+        calendarButton.layer.borderColor = tintColor.cgColor
         calendarButton.contentEdgeInsets = contentEdgeInsets
-        calendarButton.setTitleColor(tintColor, forState: .Normal)
-        calendarButton.setTitleColor(tintColor.colorWithAlphaComponent(0.6), forState: UIControlState.Highlighted)
+        calendarButton.setTitleColor(tintColor, for: UIControlState())
+        calendarButton.setTitleColor(tintColor.withAlphaComponent(0.6), for: UIControlState.highlighted)
         calendarButton.clipsToBounds = true
 
         
         notificationButton.layer.borderWidth = 1
         notificationButton.layer.cornerRadius = 5
-        notificationButton.layer.borderColor = tintColor.CGColor
+        notificationButton.layer.borderColor = tintColor.cgColor
         notificationButton.contentEdgeInsets = contentEdgeInsets
         notificationButton.clipsToBounds = true
 
@@ -117,7 +117,7 @@ class PermissionView: UIView {
      
      - parameter state: New state that describes the current status of permissions.
      */
-    func updateStateOfButtons(state: StatusOfPermissions) {
+    func updateStateOfButtons(_ state: StatusOfPermissions) {
         latestPermissionConfiguration = state
         tintButtonsBasedOnLatestPermissionStatus()
     }
@@ -127,23 +127,23 @@ class PermissionView: UIView {
      */
     private func tintButtonsBasedOnLatestPermissionStatus() {
         if let state = latestPermissionConfiguration {
-            locationCheckmark.hidden = !state.permissionLocationGranted
-            locationButton.enabled = !state.permissionLocationGranted
+            locationCheckmark.isHidden = !state.permissionLocationGranted
+            locationButton.isEnabled = !state.permissionLocationGranted
             
-            calendarChackmark.hidden = !state.permissionCalendarGranted
-            calendarButton.enabled = !state.permissionCalendarGranted
+            calendarChackmark.isHidden = !state.permissionCalendarGranted
+            calendarButton.isEnabled = !state.permissionCalendarGranted
             
-            notificationCheckmark.hidden = !state.permissionNotificationGranted
-            notificationButton.enabled = !state.permissionNotificationGranted
+            notificationCheckmark.isHidden = !state.permissionNotificationGranted
+            notificationButton.isEnabled = !state.permissionNotificationGranted
             
             let newColorForLocationPermissionButton = state.permissionLocationGranted ? colorForCheckedButtons : tintColor
             let newColorForCalendarPermissionButton = state.permissionCalendarGranted ? colorForCheckedButtons : tintColor
             let newColorForNotificationPermissionButton = state.permissionNotificationGranted ? colorForCheckedButtons : tintColor
             
             //tinting the buttons
-            tintButtonIntoColor(newColorForLocationPermissionButton, button: locationButton)
-            tintButtonIntoColor(newColorForCalendarPermissionButton, button: calendarButton)
-            tintButtonIntoColor(newColorForNotificationPermissionButton, button: notificationButton)
+            tintButtonIntoColor(newColorForLocationPermissionButton!, button: locationButton)
+            tintButtonIntoColor(newColorForCalendarPermissionButton!, button: calendarButton)
+            tintButtonIntoColor(newColorForNotificationPermissionButton!, button: notificationButton)
             
             //tinting the checkmarks
             locationCheckmark.tintColor = newColorForLocationPermissionButton
@@ -160,13 +160,13 @@ class PermissionView: UIView {
      - parameter color:  The color in which the button should be colored in.
      - parameter button: The button that is to be styled.
      */
-    private func tintButtonIntoColor(color: UIColor, button: UIButton) {
-        button.setTitleColor(color, forState: .Normal)
-        button.setTitleColor(color.colorWithAlphaComponent(0.6), forState: UIControlState.Highlighted)
-        button.layer.borderColor = color.CGColor
+    private func tintButtonIntoColor(_ color: UIColor, button: UIButton) {
+        button.setTitleColor(color, for: UIControlState())
+        button.setTitleColor(color.withAlphaComponent(0.6), for: UIControlState.highlighted)
+        button.layer.borderColor = color.cgColor
         button.imageView?.tintColor = color
         if let image = button.imageView?.image {
-            button.imageView?.image? = image.imageWithRenderingMode(UIImageRenderingMode.AlwaysTemplate)
+            button.imageView?.image? = image.withRenderingMode(UIImageRenderingMode.alwaysTemplate)
         }
         
     }
@@ -178,7 +178,7 @@ class PermissionView: UIView {
      
      - returns: Insets for the caller to apply to the button. It will position the image correctly.
      */
-    private func imageInsetsForButton(button: UIButton) -> UIEdgeInsets {
+    private func imageInsetsForButton(_ button: UIButton) -> UIEdgeInsets {
         let offsetForLocationButtonImage = button.frame.width - button.titleLabel!.frame.width - (button.imageView!.frame.width + button.contentEdgeInsets.left)
         
         return UIEdgeInsets(top: 0, left: -offsetForLocationButtonImage, bottom: 0, right: 0)
