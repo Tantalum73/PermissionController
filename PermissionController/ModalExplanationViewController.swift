@@ -239,10 +239,16 @@ final public class ModalExplanationViewController: UIViewController {
         let center = CGPoint(x: view.bounds.width/2, y: view.bounds.height/2)
         snapBehavior = self.snapBehaviorForCenter(center, item: newView)
         
+        /*IMPORTANT:
+         Add the autolayout constraints BEFORE any behaviors (using the view) are attached to an animator.
+         Otherwise on iOS 10 the view will have a wired size and will not respect the autolayout constraints.
+         */
+        addConstraintsToNewView(newView)
+        
         attachmentBehavior = attachmentBehaviorForCenter(center, item: newView)
         resetExplanationView(self.currentExplanationView, position: position)
         
-        addConstraintsToNewView(newView)
+        
         newView.transform = newView.transform.concat(CGAffineTransform(translationX: 0, y: -offsetForExplanationView))
     }
 
@@ -274,6 +280,7 @@ final public class ModalExplanationViewController: UIViewController {
             correctView.calendarButton.addTarget(self, action: #selector(ModalExplanationViewController.permissionButtonCalendarPressed), for: .touchUpInside)
             correctView.notificationButton.addTarget(self, action: #selector(ModalExplanationViewController.permissionButtonNotificationPressed), for: .touchUpInside)
             correctView.doneButton.addTarget(self, action: #selector(ModalExplanationViewController.doneButtonPressed), for: .touchUpInside)
+            
             updateButtonAppearenceBasedOnCurrentSetOfPermissions()
         }
         
@@ -289,10 +296,7 @@ final public class ModalExplanationViewController: UIViewController {
         if let statusOfPermissions = permissionActionHandler?.stateOfPermissions(), let currentPermissionView = currentExplanationView as? PermissionView  {
             
             currentPermissionView.updateStateOfButtons(statusOfPermissions)
-            
-//            currentPermissionView.locationButton.enabled = !statusOfPermissions.permissionLocationGranted
-//            currentPermissionView.calendarButton.enabled = !statusOfPermissions.permissionCalendarGranted
-//            currentPermissionView.notificationButton.enabled = !statusOfPermissions.permissionNotificationGranted
+
         }
     }
     
@@ -385,6 +389,7 @@ final public class ModalExplanationViewController: UIViewController {
         let multiplier : CGFloat = isWiderThanHeigh() ? CGFloat(kExplainationViewHeightPercentageLandscape) : CGFloat(kExplainationViewHeightPercentagePortrait)
         
         return NSLayoutConstraint(item: view, attribute: .height, relatedBy: .equal, toItem: self.view, attribute: .height, multiplier: multiplier, constant: 0)
+        
     }
     
     /**
@@ -407,14 +412,16 @@ final public class ModalExplanationViewController: UIViewController {
         centerXOfView = NSLayoutConstraint(item: view, attribute: .centerX, relatedBy: .equal, toItem: self.view, attribute: .centerX, multiplier: 1, constant: 0)
         
         centerYOfView = NSLayoutConstraint(item: view, attribute: .centerY, relatedBy: .equal, toItem: self.view, attribute: .centerY, multiplier: 1, constant: 0)
-        
+
         widthOfView = constraintWidthForExplanationView(view)
         heightOfView = constraintHeightForExplanationView(view)
-        
+
         self.view.addConstraint(centerXOfView)
         self.view.addConstraint(centerYOfView)
         self.view.addConstraint(heightOfView)
         self.view.addConstraint(widthOfView)
+
+        view.layoutIfNeeded()
         
     }
 
