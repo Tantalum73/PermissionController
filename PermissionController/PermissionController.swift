@@ -22,16 +22,16 @@ public enum PermissionInterestedIn {
 }
 
 /// Exposes the interface for persenting the permission dialog and handles the actions.
-public class PermissionController: NSObject, CLLocationManagerDelegate {
-    private var locationManager : CLLocationManager?
-    private var eventStore : EKEventStore?
-    private var currentViewControllerView: UIView?
+open class PermissionController: NSObject, CLLocationManagerDelegate {
+    fileprivate var locationManager : CLLocationManager?
+    fileprivate var eventStore : EKEventStore?
+    fileprivate var currentViewControllerView: UIView?
     
-    private var calendarSuccessBlock : (()->())?
-    private var calendarFailureBlock: (()->())?
+    fileprivate var calendarSuccessBlock : (()->())?
+    fileprivate var calendarFailureBlock: (()->())?
     
-    private var successBlock : (()->())?
-    private var failureBlock: (()->())?
+    fileprivate var successBlock : (()->())?
+    fileprivate var failureBlock: (()->())?
 
 
 /**
@@ -54,7 +54,7 @@ If other permissions are missing, the PermissionView will be displayed and false
 - parameter failureBlock: This block will be executed on the main thread if the user dismissed the PermissionView and did not gave the desired permission.
 */
     
-    public func presentPermissionViewIfNeededInViewController(_ viewController: UIViewController, interestedInPermission: PermissionInterestedIn?, successBlock: (()->())?, failureBlock: (()->())? ) -> Bool {
+    open func presentPermissionViewIfNeededInViewController(_ viewController: UIViewController, interestedInPermission: PermissionInterestedIn?, successBlock: (()->())?, failureBlock: (()->())? ) -> Bool {
         
         let status = stateOfPermissions()
         
@@ -123,7 +123,7 @@ If other permissions are missing, the PermissionView will be displayed and false
     /**
      Receives CLLocationManagerDelegate authorization calls and writes them to the `NSUserDefaults`. Then, a notification is posted that tells the displayed dialog to update the UI accordingly.
      */
-    public func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+    open func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         
         let defaults = UserDefaults.standard
         switch status {
@@ -159,12 +159,12 @@ If other permissions are missing, the PermissionView will be displayed and false
     /**
      Open the Settings.app on the users device because he already declined the permission and it needs to be changed from there.
      */
-    private func sendUserToSettings() {
+    fileprivate func sendUserToSettings() {
         let url = URL(string: UIApplicationOpenSettingsURLString)!
         
-        if UIApplication.shared().canOpenURL(url) {
+        if UIApplication.shared.canOpenURL(url) {
             
-            UIApplication.shared().openURL(url)
+            UIApplication.shared.openURL(url)
         }
 
     }
@@ -181,7 +181,7 @@ extension PermissionController: PermissionAskingProtocol {
         if UserDefaults.standard.bool(forKey: "CalendarPermission") == true || EKEventStore.authorizationStatus(for: EKEntityType.event) == EKAuthorizationStatus.authorized {
             status.permissionCalendarGranted = true
         }
-        let registeredNotificationSettigns = UIApplication.shared().currentUserNotificationSettings()
+        let registeredNotificationSettigns = UIApplication.shared.currentUserNotificationSettings
         
         if registeredNotificationSettigns?.types.rawValue != 0 || defaults.bool(forKey: "NotificationPermission") == true {
             //Some notifications are registered or already asked (probably both)
@@ -229,14 +229,14 @@ extension PermissionController: PermissionAskingProtocol {
             DispatchQueue.main.async(execute: {NotificationCenter.default.post(name: Notification.Name(rawValue: "AuthorizationStatusChanged"), object: nil)
             })
             
-        })
+        } as! EKEventStoreRequestAccessCompletionHandler)
 
     }
     func permissionButtonNotificationPressed() {
         
 //        NSNotificationCenter.defaultCenter().postNotificationName("AuthorizationStatusChanged", object: nil)
         let defaults = UserDefaults.standard
-        let registeredNotificationSettigns = UIApplication.shared().currentUserNotificationSettings()
+        let registeredNotificationSettigns = UIApplication.shared.currentUserNotificationSettings
         
         if registeredNotificationSettigns?.types.rawValue == 0 && defaults.bool(forKey: "NotificationPermissionWasAskedOnce") == true {
             //Some notifications are registered or already asked (probably both)
@@ -249,7 +249,7 @@ extension PermissionController: PermissionAskingProtocol {
         
         let desiredNotificationSettigns = UIUserNotificationSettings(types: [UIUserNotificationType.alert, .badge, .sound] , categories: nil)
         
-        UIApplication.shared().registerUserNotificationSettings(desiredNotificationSettigns)
+        UIApplication.shared.registerUserNotificationSettings(desiredNotificationSettigns)
     }
 }
 

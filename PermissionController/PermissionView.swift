@@ -44,8 +44,8 @@ class PermissionView: UIView {
     @IBOutlet weak var notificationDescriptionLabel: UILabel!
 
     
-    private let colorForCheckedButtons = UIColor.colorFromHex(0x209922, alpha: 1)
-    private var latestPermissionConfiguration : StatusOfPermissions?
+    fileprivate let colorForCheckedButtons = UIColor.colorFromHex(0x209922, alpha: 1)
+    fileprivate var latestPermissionConfiguration : StatusOfPermissions?
     
     override func awakeFromNib() {
         setUpView()
@@ -73,7 +73,7 @@ class PermissionView: UIView {
     }
     
     /// Styles the view.
-    private func setUpView() {
+    fileprivate func setUpView() {
         //some view adjustment code, like corner radius
         layer.cornerRadius = 10
         layer.masksToBounds = true
@@ -83,7 +83,7 @@ class PermissionView: UIView {
     }
     
     /// Styles the buttons.
-    private func setUpButtons() {
+    fileprivate func setUpButtons() {
         let contentEdgeInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
         
         
@@ -125,7 +125,7 @@ class PermissionView: UIView {
     /**
      This method applies the tint color to the buttons. Either that is `colorForCheckedButtons` or the actual `tintColor` of the view.
      */
-    private func tintButtonsBasedOnLatestPermissionStatus() {
+    fileprivate func tintButtonsBasedOnLatestPermissionStatus() {
         if let state = latestPermissionConfiguration {
             locationCheckmark.isHidden = !state.permissionLocationGranted
             locationButton.isEnabled = !state.permissionLocationGranted
@@ -160,7 +160,7 @@ class PermissionView: UIView {
      - parameter color:  The color in which the button should be colored in.
      - parameter button: The button that is to be styled.
      */
-    private func tintButtonIntoColor(_ color: UIColor, button: UIButton) {
+    fileprivate func tintButtonIntoColor(_ color: UIColor, button: UIButton) {
         button.setTitleColor(color, for: UIControlState())
         button.setTitleColor(color.withAlphaComponent(0.6), for: UIControlState.highlighted)
         button.layer.borderColor = color.cgColor
@@ -178,7 +178,7 @@ class PermissionView: UIView {
      
      - returns: Insets for the caller to apply to the button. It will position the image correctly.
      */
-    private func imageInsetsForButton(_ button: UIButton) -> UIEdgeInsets {
+    fileprivate func imageInsetsForButton(_ button: UIButton) -> UIEdgeInsets {
         let offsetForLocationButtonImage = button.frame.width - button.titleLabel!.frame.width - (button.imageView!.frame.width + button.contentEdgeInsets.left)
         
         return UIEdgeInsets(top: 0, left: -offsetForLocationButtonImage, bottom: 0, right: 0)

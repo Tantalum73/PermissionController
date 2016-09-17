@@ -69,40 +69,40 @@ final public class ModalExplanationViewController: UIViewController {
     var permissionActionHandler : PermissionAskingProtocol?
     
         /// Name of the nibs that should be presented in this modal-carousel style.
-    private var nameOfNibs : [String]!
+    fileprivate var nameOfNibs : [String]!
     
         /// Completion block that is executed after the user has dismissed the dialog.
-    private var completion : ((finishedWithSuccess : Bool)->())?
+    fileprivate var completion : ((_ finishedWithSuccess : Bool)->())?
     
         /// Offset by which the presented view will be translated down before animating in.
-    private lazy var offsetForExplanationView : CGFloat = {
-        let heightOfScreen = UIScreen.main().bounds.size.height
+    fileprivate lazy var offsetForExplanationView : CGFloat = {
+        let heightOfScreen = UIScreen.main.bounds.size.height
         
         return heightOfScreen
     }()
     
         /// UIDynamicAnimator for driving the interaction
-    private var animator : UIDynamicAnimator!
+    fileprivate var animator : UIDynamicAnimator!
         /// UIAttachmentBehavior for attaching the view to the bottom and thereby achieving a rotation.
-    private var attachmentBehavior : UIAttachmentBehavior!
+    fileprivate var attachmentBehavior : UIAttachmentBehavior!
         /// UISnapBehavior for snapping the view to the center.
-    private var snapBehavior : UISnapBehavior!
+    fileprivate var snapBehavior : UISnapBehavior!
         ///UIAttachmentBehavior that is attached when the user pans the view.
-    private var panBehavior : UIAttachmentBehavior!
+    fileprivate var panBehavior : UIAttachmentBehavior!
         /// The current view that is visible on the screen.
-    private var currentExplanationView : UIView!
+    fileprivate var currentExplanationView : UIView!
     
         /// Constraint that defines the width of the view. Derived from kExplainationViewWidthPercentagePortrait and kExplainationViewWidthPercentageLandscape.
-    private var widthOfView : NSLayoutConstraint!
+    fileprivate var widthOfView : NSLayoutConstraint!
     /// Constraint that defines the height of the view. Derived from kExplainationViewHeightPercentagePortrait and kExplainationViewHeightPercentageLandscape.
-    private var heightOfView : NSLayoutConstraint!
+    fileprivate var heightOfView : NSLayoutConstraint!
         /// Constraint that defines the centerX of the view.
-    private var centerXOfView : NSLayoutConstraint!
+    fileprivate var centerXOfView : NSLayoutConstraint!
         /// Constraint that defines the centerY of the view.
-    private var centerYOfView : NSLayoutConstraint!
+    fileprivate var centerYOfView : NSLayoutConstraint!
     
         /// Index of the currently displayed view.
-    private var index = 0
+    fileprivate var index = 0
     
     /**
      Enum that defines possible states of the view.
@@ -187,7 +187,7 @@ final public class ModalExplanationViewController: UIViewController {
      - parameter nameOfNibs:     Name of the nibs that will be presented and animated.
      - parameter completion:     A completion block that will be executed when the interaction has finished: the user has swiped through the views (from right to left, every view was presented, `finishedWithSuccess=true` or dismissed the first one (first view came from right and was pushed rightwards, too, `finishedWithSuccess=false`).
      */
-    public func presentExplanationViewControllerOnViewController(_ viewController : UIViewController, nameOfNibs: [String], completion:((finishedWithSuccess : Bool)->())?) {
+    public func presentExplanationViewControllerOnViewController(_ viewController : UIViewController, nameOfNibs: [String], completion:((_ finishedWithSuccess : Bool)->())?) {
         self.nameOfNibs = nameOfNibs
         
         self.completion = completion
@@ -205,7 +205,7 @@ final public class ModalExplanationViewController: UIViewController {
     /**
      Sets up the UIDynamicAnimator and attaches the first view as well as the gestureRecognizer.
      */
-    private func setupAnimator() {
+    fileprivate func setupAnimator() {
         animator = UIDynamicAnimator(referenceView: self.view)
         
         self.addBehaiviorsAndViewForIndex(0, position: .rotatedRight)
@@ -220,7 +220,7 @@ final public class ModalExplanationViewController: UIViewController {
      - parameter nextIndex: Index of the next view that should be loaded from a nib. The name is stored in the global `nameOfNibs` array.
      - parameter position:  Position in which the new view should be started from (`.RotatedRight` in most cases)
      */
-    private func addBehaiviorsAndViewForIndex(_ nextIndex:Int, position: ExplanationViewPosition) {
+    fileprivate func addBehaiviorsAndViewForIndex(_ nextIndex:Int, position: ExplanationViewPosition) {
         
         
         if(nextIndex >= self.nameOfNibs.count) {
@@ -248,8 +248,7 @@ final public class ModalExplanationViewController: UIViewController {
         attachmentBehavior = attachmentBehaviorForCenter(center, item: newView)
         resetExplanationView(self.currentExplanationView, position: position)
         
-        
-        newView.transform = newView.transform.concat(CGAffineTransform(translationX: 0, y: -offsetForExplanationView))
+        newView.transform = newView.transform.concatenating(CGAffineTransform(translationX: 0, y: -offsetForExplanationView))
     }
 
     /**
@@ -261,7 +260,7 @@ final public class ModalExplanationViewController: UIViewController {
      
      - returns: A styled and configured UIView if the nib name was valid, nil if not.
      */
-    private func createExplanationViewForIndex(_ index: Int) -> UIView? {
+    fileprivate func createExplanationViewForIndex(_ index: Int) -> UIView? {
         
         let generalView: UIView = UINib(nibName: String(self.nameOfNibs[index]), bundle: nil).instantiate(withOwner: nil, options: nil).first as! UIView
         
@@ -273,7 +272,7 @@ final public class ModalExplanationViewController: UIViewController {
        
         if let correctView = generalView as? PermissionView {
 
-            NotificationCenter.default.addObserver(self, selector:#selector(ModalExplanationViewController.updateButtonAppearenceBasedOnCurrentSetOfPermissions) , name: "AuthorizationStatusChanged" as NSNotification.Name, object: nil)
+            NotificationCenter.default.addObserver(self, selector:#selector(ModalExplanationViewController.updateButtonAppearenceBasedOnCurrentSetOfPermissions) , name: NSNotification.Name(rawValue: "AuthorizationStatusChanged"), object: nil)
             
             correctView.progressView.progress = 1.0
             correctView.locationButton.addTarget(self, action: #selector(ModalExplanationViewController.permissionButtonLocationPressed), for: .touchUpInside)
@@ -507,7 +506,7 @@ final public class ModalExplanationViewController: UIViewController {
                 panBehavior.anchorPoint = position.viewCenter(center, offsetFromCenter: self.offsetForExplanationView)
                 
                 //wait a little before the new view is presented
-                DispatchQueue.main.after(when: DispatchTime.now() + Double((Int64)(duration * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC), execute: {
+                DispatchQueue.main.asyncAfter(deadline: .now() + duration) { () -> Void in
                     
                     if nextIndex >= self.nameOfNibs.count {
                         //finish the interaction if the last view was swiped away. Pass in `true` because the user finished by swiping through all views.
@@ -519,7 +518,9 @@ final public class ModalExplanationViewController: UIViewController {
                         self.addBehaiviorsAndViewForIndex(nextIndex, position: nextPosition)
                         
                     }
-                })
+                }
+
+               
 
             }
             else {
@@ -625,7 +626,7 @@ final public class ModalExplanationViewController: UIViewController {
      - parameter position:   The position in which the current view should be animated to.
      - parameter completion: Completion handler that is called after the animation finished.
      */
-    private func animateTheCurrentViewToPosition(_ position: ExplanationViewPosition, completion:(()->Void)) {
+    private func animateTheCurrentViewToPosition(_ position: ExplanationViewPosition, completion:@escaping (()->Void)) {
         
         //Basically we want the view to be rotated and translated, animated.
         
@@ -669,7 +670,7 @@ final public class ModalExplanationViewController: UIViewController {
     private func dismissAndCallCompletionAccordinglyWithSuccess(_ success: Bool) {
         self.dismiss(animated: true, completion: {
             
-            self.completion?(finishedWithSuccess: success)
+            self.completion?(success)
         })
     }
 }
