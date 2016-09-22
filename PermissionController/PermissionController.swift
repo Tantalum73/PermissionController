@@ -212,24 +212,27 @@ extension PermissionController: PermissionAskingProtocol {
         UserDefaults.standard.set(true, forKey: "CalendarPermissionWasAskedOnce")
         
         self.eventStore = EKEventStore()
-        self.eventStore?.requestAccess(to: EKEntityType.event, completion: { (granted: Bool, error: NSError?) -> Void in
+        
+        let accessCompletionHandler : EKEventStoreRequestAccessCompletionHandler = {(granted:Bool , error: Error?) in
+        let defaults = UserDefaults.standard
+        
+        
+        
+        if granted {
+            defaults.set(true, forKey: "CalendarPermission")
+        }
+        else {
             
-            let defaults = UserDefaults.standard
-
-            
-            
-            if granted {
-                defaults.set(true, forKey: "CalendarPermission")
-            }
-            else {
-                
-                defaults.set(false, forKey: "CalendarPermission")
-            }
-            defaults.synchronize()
-            DispatchQueue.main.async(execute: {NotificationCenter.default.post(name: Notification.Name(rawValue: "AuthorizationStatusChanged"), object: nil)
+            defaults.set(false, forKey: "CalendarPermission")
+        }
+        defaults.synchronize()
+        DispatchQueue.main.async(execute: {NotificationCenter.default.post(name: Notification.Name(rawValue: "AuthorizationStatusChanged"), object: nil)
             })
-            
-        } as! EKEventStoreRequestAccessCompletionHandler)
+        }
+        
+        self.eventStore?.requestAccess(to: .event, completion: accessCompletionHandler)
+
+
 
     }
     func permissionButtonNotificationPressed() {

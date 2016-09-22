@@ -26,6 +26,8 @@
 	<string>You could use even more awsome features!</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>You could use even more awsome features!</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>You could use even more awsome features!</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
