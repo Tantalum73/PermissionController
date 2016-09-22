@@ -9,7 +9,7 @@
 import UIKit
 import MapKit
 import EventKit
-
+import UserNotifications
 /**
 Enum to express types of permission in that you are interested in.
  
@@ -226,7 +226,8 @@ extension PermissionController: PermissionAskingProtocol {
             defaults.set(false, forKey: "CalendarPermission")
         }
         defaults.synchronize()
-        DispatchQueue.main.async(execute: {NotificationCenter.default.post(name: Notification.Name(rawValue: "AuthorizationStatusChanged"), object: nil)
+        DispatchQueue.main.async(execute: {
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "AuthorizationStatusChanged"), object: nil)
             })
         }
         
@@ -237,7 +238,7 @@ extension PermissionController: PermissionAskingProtocol {
     }
     func permissionButtonNotificationPressed() {
         
-//        NSNotificationCenter.defaultCenter().postNotificationName("AuthorizationStatusChanged", object: nil)
+        //        NSNotificationCenter.defaultCenter().postNotificationName("AuthorizationStatusChanged", object: nil)
         let defaults = UserDefaults.standard
         let registeredNotificationSettigns = UIApplication.shared.currentUserNotificationSettings
         
@@ -250,9 +251,23 @@ extension PermissionController: PermissionAskingProtocol {
         
         defaults.set(true, forKey: "NotificationPermissionWasAskedOnce")
         
-        let desiredNotificationSettigns = UIUserNotificationSettings(types: [UIUserNotificationType.alert, .badge, .sound] , categories: nil)
+        //iOS 10 changed this a little
+        if #available(iOS 10.0, *) {
+            UNUserNotificationCenter.current().requestAuthorization(options: [.alert,.badge,.sound]) { (granted, error) in
+                if(granted){
+                    let defaults = UserDefaults.standard
+                    defaults.set(true, forKey: "NotificationPermission")
+                }
+                DispatchQueue.main.async(execute: {
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "AuthorizationStatusChanged"), object: nil)
+                })
+            }
+        } else {
+            let desiredNotificationSettigns = UIUserNotificationSettings(types: [UIUserNotificationType.alert, .badge, .sound] , categories: nil)
+            
+            UIApplication.shared.registerUserNotificationSettings(desiredNotificationSettigns)
+        }
         
-        UIApplication.shared.registerUserNotificationSettings(desiredNotificationSettigns)
     }
 }
 
