@@ -153,9 +153,9 @@ final public class ModalExplanationViewController: UIViewController {
         func viewTransform() -> CGAffineTransform {
             switch self {
             case .rotatedRight:
-                return CGAffineTransform(rotationAngle: CGFloat(M_PI_2))
+                return CGAffineTransform(rotationAngle: CGFloat.pi)
             case .rotatedLeft:
-                return CGAffineTransform(rotationAngle: CGFloat(-M_PI_2))
+                return CGAffineTransform(rotationAngle: -CGFloat.pi)
             default:
                 return CGAffineTransform.identity
             }
